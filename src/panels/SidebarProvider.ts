@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { getNonce } from "../getNonce";
+import { sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -23,8 +24,15 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
-        case "btn-first": {
-          vscode.window.showInformationMessage("Clicked");
+        case "fix-code": {
+          const editor = vscode.window.activeTextEditor;
+          if (editor) {
+            const selectedCode = editor.document.getText(editor.selection);
+            sendSelectedCodeToServer(selectedCode);
+            vscode.window.showInformationMessage(selectedCode);
+          } else {
+            vscode.window.showErrorMessage('No text selected');
+          }
           break;
         }
 
@@ -94,18 +102,18 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               <h2>Features</h2>
               
               <ul>
-                <li><a href="">Fix</a></li>
-                <li><a href="">Explain</a></li>
-                <li><a href="">Generate Code Documentation</a></li>
-                <li><a href="">Generate Unit Tests</a> </li>
+                <li><a href="" class="fix-code">Fix</a></li>
+                <li><a href="" class="explain-code">Explain</a></li>
+                <li><a href="" class="generate-code-doc">Generate Code Documentation</a></li>
+                <li><a href="" class="generate-unit-test">Generate Unit Tests</a> </li>
               </ul>
               
               
               
                   <h2>Chat</h2>
                 <div class="chat-box">
-                  <input type="text" placeholder="Ask me anything!"/>
-                  <button>Send</button>
+                  <input type="text" placeholder="Ask me anything!" class="chat-input"/>
+                  <button class="send-btn">Send</button>
               </div>
 
         </div>

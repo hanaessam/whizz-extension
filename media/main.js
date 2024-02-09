@@ -4,15 +4,15 @@
 (function () {
     const vscode = acquireVsCodeApi();
 
-    const btnfirst = document.querySelector('.btn-first');
+    const fixCode = document.querySelector('.fix-code');
   
-    btnfirst.addEventListener('click', firstBtnClicked);
+    fixCode.addEventListener('click', fixClicked);
    
 
-    function firstBtnClicked() {
+    function fixClicked() {
         vscode.postMessage({
-            type: 'btn-first',
-            value: 'btn-first clicked'
+            type: 'fix-code',
+            value: 'fix-code clicked'
         });
     }
 

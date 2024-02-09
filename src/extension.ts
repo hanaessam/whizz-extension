@@ -31,19 +31,10 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 
-	let highlight = vscode.commands.registerCommand('whizz.sendSelectedCode', () => {
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-            const selectedCode = editor.document.getText(editor.selection);
-            sendSelectedCodeToServer(selectedCode);
-			vscode.window.showInformationMessage(selectedCode);
-        } else {
-            vscode.window.showErrorMessage('No text selected');
-        }
-    });
+	
 
 
-	context.subscriptions.push(disposable, highlight);
+	context.subscriptions.push(disposable);
 }
 
 
