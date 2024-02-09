@@ -19,8 +19,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     };
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
-
     
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
@@ -49,7 +47,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case "send-btn":
           {
             let selectedCode = getSelectedCode();
-            vscode.window.showInformationMessage(data.value + `, ${selectedCode}` );
+            let query = data.value + selectedCode;
+            if(query){
+              sendSelectedCodeToServer(query);
+              webviewView.webview.postMessage({ type: "update-chatbox", value: query });
+              vscode.window.showInformationMessage(query);
+            }else {
+              vscode.window.showErrorMessage('No query to send');
+            }
             break;
           }
 
@@ -75,7 +80,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   public revive(panel: vscode.WebviewView) {
     this._view = panel;
   }
-
 
 
   private _getHtmlForWebview(webview: vscode.Webview) {
@@ -105,6 +109,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   
        
 			</head>
@@ -127,11 +132,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               
               
               
-                  <h2>Chat</h2>
-                <div class="chat-box">
+              <h2>Chat</h2>
+              <div class="chat-box"> </div>
+              
+              <div class="chat-field">
                   <input type="text" placeholder="Ask me anything!" class="chat-input"/>
-                  <button class="send-btn">Send</button>
-              </div>
+                  <div class="send-icon"><a class="send-btn fa fa-send"></a></div>
+              </>
 
         </div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>

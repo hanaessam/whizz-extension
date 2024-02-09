@@ -38,7 +38,7 @@ img {
 	align-items:start;
 }
 
-.chat-box{
+.chat-field{
 	flex: 2;
 	width: 100%;
 	height: 100%;
@@ -47,12 +47,46 @@ img {
 	align-items: start;
 }
 
-.chat-box input{
-	flex: 3;
+.chat-field input{
+	flex: 10;
+	border-radius: 5px;
+	padding: 5px;
+	border: solid 1px rgba(255, 255, 255, 0.1);
 }
 
-.chat-box button{
-	flex: 1;
+.send-icon a{
+	text-decoration: none;
+}
+.send-icon{
 	margin-left: 2px;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 30px;
+	background-color: transparent;
+	transition: all 0.3s ease;
+}
+.send-icon:hover, .send-icon:active{
+	cursor: pointer;
+	background-color: rgba(255, 255, 255, 0.1);
+	border-radius: 5px;
+	border: solid 1px rgba(255, 255, 255, 0.1);
 }
 
+.chat-box {
+	flex: 3;
+	flex-direction: column;
+	display: flex;
+	justify-content: start;
+
+}
+
+.chat-message {
+	background-color: rgba(255, 255, 255, 0.05);
+	border-radius: 5px;
+	margin: 5px 0;
+	padding: 5px;
+	border: solid 1px rgba(255, 255, 255, 0.1);
+}
