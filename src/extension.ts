@@ -1,9 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import axios from 'axios';
-
 import { SidebarProvider } from './panels/SidebarProvider';
+import { sendSelectedCodeToServer } from './vscode-gateway/helper-functions';
 
 
 
@@ -47,18 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable, highlight);
 }
 
-async function sendSelectedCodeToServer(selectedCode: string) {
-    try {
-        const response = await axios.post('http://localhost:8888/vscode/highlight', {
-            highlightedCode: selectedCode
-        });
-        console.log(response.data);
-        vscode.window.showInformationMessage('Selected code sent to server successfully');
-    } catch (error) {
-        console.error('Error sending selected code:', error);
-        vscode.window.showErrorMessage('Error sending selected code to server');
-    }
-}
+
 
 
 // This method is called when your extension is deactivated

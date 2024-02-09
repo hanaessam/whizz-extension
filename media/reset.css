@@ -28,3 +28,31 @@ img {
 	max-width: 100%;
 	height: auto;
 }
+
+
+.whizz-body{
+
+	display: flex;
+	flex-direction: column;
+	justify-content:space-between;
+	align-items:start;
+}
+
+.chat-box{
+	flex: 2;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: space-around;
+	align-items: start;
+}
+
+.chat-box input{
+	flex: 3;
+}
+
+.chat-box button{
+	flex: 1;
+	margin-left: 2px;
+}
+

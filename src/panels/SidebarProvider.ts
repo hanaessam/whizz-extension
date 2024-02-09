@@ -85,8 +85,30 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 			</head>
       <body>
 
-        <button type="button" class="btn-first">Click</button>
+        <div class="whizz-body">
+         <h1>Welcome to Whizz!</h1>
+          <p> Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
+            With Whizz, expect quick fixes, code explaination, and enhanced productivity right within your IDE. 
+          </p>
+              
+              <h2>Features</h2>
+              
+              <ul>
+                <li><a href="">Fix</a></li>
+                <li><a href="">Explain</a></li>
+                <li><a href="">Generate Code Documentation</a></li>
+                <li><a href="">Generate Unit Tests</a> </li>
+              </ul>
+              
+              
+              
+                  <h2>Chat</h2>
+                <div class="chat-box">
+                  <input type="text" placeholder="Ask me anything!"/>
+                  <button>Send</button>
+              </div>
 
+        </div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
