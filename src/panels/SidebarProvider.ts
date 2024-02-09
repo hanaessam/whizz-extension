@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getNonce } from "../getNonce";
-import { sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
+import { getSelectedCode, sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -21,20 +21,37 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
 
-
+    
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "fix-code": {
-          const editor = vscode.window.activeTextEditor;
-          if (editor) {
-            const selectedCode = editor.document.getText(editor.selection);
+          let selectedCode = getSelectedCode();
+          if (selectedCode) {
             sendSelectedCodeToServer(selectedCode);
             vscode.window.showInformationMessage(selectedCode);
-          } else {
-            vscode.window.showErrorMessage('No text selected');
+          }else {
+            vscode.window.showErrorMessage('No code is selected');
           }
           break;
         }
+
+        case "explain-code": {
+          let selectedCode = getSelectedCode();
+          if (selectedCode) {
+            sendSelectedCodeToServer(selectedCode);
+            vscode.window.showInformationMessage(selectedCode);
+          }else {
+            vscode.window.showErrorMessage('No code is selected');
+          }
+          break;
+        }
+
+        case "send-btn":
+          {
+            let selectedCode = getSelectedCode();
+            vscode.window.showInformationMessage(data.value + `, ${selectedCode}` );
+            break;
+          }
 
         case "onInfo": {
           if (!data.value) {
