@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getNonce } from "../getNonce";
-import { getSelectedCode, sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
+import { getGithubProfileInfo, getSelectedCode, loginWithGithub, sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -19,7 +19,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     };
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-    
+
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "fix-code": {
@@ -27,7 +27,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           if (selectedCode) {
             sendSelectedCodeToServer(selectedCode);
             vscode.window.showInformationMessage(selectedCode);
-          }else {
+          } else {
             vscode.window.showErrorMessage('No code is selected');
           }
           break;
@@ -38,7 +38,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           if (selectedCode) {
             sendSelectedCodeToServer(selectedCode);
             vscode.window.showInformationMessage(selectedCode);
-          }else {
+          } else {
             vscode.window.showErrorMessage('No code is selected');
           }
           break;
@@ -48,15 +48,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           {
             let selectedCode = getSelectedCode();
             let query = data.value + selectedCode;
-            if(query){
+            if (query) {
               sendSelectedCodeToServer(query);
               webviewView.webview.postMessage({ type: "update-chatbox", value: query });
               vscode.window.showInformationMessage(query);
-            }else {
+            } else {
               vscode.window.showErrorMessage('No query to send');
             }
             break;
           }
+
+        case "login-with-github": {
+       
+          getGithubProfileInfo();
+          break;
+        }
 
         case "onInfo": {
           if (!data.value) {
@@ -116,6 +122,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       <body>
 
         <div class="whizz-body">
+
+        <div class="github-auth">
+          <button class="github-login">Login with GitHub</button>
+        </div>
+
          <h1>Welcome to Whizz!</h1>
           <p> Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
             With Whizz, expect quick fixes, code explaination, and enhanced productivity right within your IDE. 

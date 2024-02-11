@@ -25,3 +25,27 @@ export async function sendSelectedCodeToServer(selectedCode: string) {
         vscode.window.showErrorMessage('Error sending selected code to server');
     }
 }
+
+export async function loginWithGithub() {
+  try {
+    const response = await axios.get('http://localhost:8888/auth/github');
+    console.log(response.data);
+    vscode.window.showInformationMessage('Logged in to GitHub successfully');
+  } catch (error) {
+    console.error('Error logging in to GitHub:', error);
+    vscode.window.showErrorMessage('Error logging in to GitHub');
+  }
+}
+
+export async function getGithubProfileInfo() {
+    try {
+        loginWithGithub();
+        const response = await axios.get('http://localhost:8888/github/user');
+        console.log(response.data);
+        vscode.window.showInformationMessage('GitHub profile info retrieved successfully: ', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error retrieving GitHub profile info:', error);
+        vscode.window.showErrorMessage('Error retrieving GitHub profile info');
+    }
+}
