@@ -89,9 +89,15 @@
       case "transferDataFromTsToUi":
         txtbox.value = message.data;
         break;
-      case "update-chatbox":
+      case "send-query":
         appendMessageToChatbox(message.value);
         break;
+      case "fix-code":
+        appendMessageToChatbox(message.value);
+        break;  
+      case "explain-code":
+        appendMessageToChatbox(message.value);
+        break;  
     }
   });
 })();

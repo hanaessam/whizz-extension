@@ -49,3 +49,51 @@ export async function getGithubProfileInfo() {
         vscode.window.showErrorMessage('Error retrieving GitHub profile info');
     }
 }
+
+
+export async function sendCodeToFix(selectedCode: string) {
+  try {
+      const response = await axios.post('http://localhost:8888/openai/prompt', {
+          type: 'fix',
+          codesnippet: selectedCode
+      });
+      console.log(response.data);
+      vscode.window.showInformationMessage('Code snippet sent to server successfully');
+      return response.data; // This will be the output you can use in your webview
+  } catch (error) {
+      console.error('Error sending code snippet:', error);
+      vscode.window.showErrorMessage('Error sending code snippet to server');
+  }
+}
+
+
+export async function sendCodeToExplain(selectedCode: string) {
+  try {
+      const response = await axios.post('http://localhost:8888/openai/prompt', {
+          type: 'explain',
+          codesnippet: selectedCode
+      });
+      console.log(response.data);
+      vscode.window.showInformationMessage('Code snippet sent to server successfully');
+      return response.data; // This will be the output you can use in your webview
+  } catch (error) {
+      console.error('Error sending code snippet:', error);
+      vscode.window.showErrorMessage('Error sending code snippet to server');
+  }
+}
+
+export async function sendGeneralPrompt(codesnippet: string | null, query: string) {
+  try {
+      const response = await axios.post('http://localhost:8888/openai/prompt', {
+          type: 'general',
+          codesnippet: codesnippet,
+          prompt: query
+      });
+      console.log(response.data);
+      vscode.window.showInformationMessage('Prompt sent to server successfully');
+      return response.data; // This will be the output you can use in your webview
+  } catch (error) {
+      console.error('Error sending prompt:', error);
+      vscode.window.showErrorMessage('Error sending prompt to server');
+  }
+}
