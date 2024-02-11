@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getNonce } from "../getNonce";
-import { getGithubProfileInfo, getSelectedCode, loginWithGithub, sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
+import { getGithubProfileInfo, getSelectedCode, loginWithGithub, sendCodeToExplain, sendCodeToFix, sendGeneralPrompt, sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -25,8 +25,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case "fix-code": {
           let selectedCode = getSelectedCode();
           if (selectedCode) {
-            sendSelectedCodeToServer(selectedCode);
-            vscode.window.showInformationMessage(selectedCode);
+            // sendSelectedCodeToServer(selectedCode);
+            let response = await sendCodeToFix(selectedCode);
+            vscode.window.showInformationMessage(response);
+            webviewView.webview.postMessage({ type: "fix-code", value: response });
           } else {
             vscode.window.showErrorMessage('No code is selected');
           }
@@ -36,8 +38,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case "explain-code": {
           let selectedCode = getSelectedCode();
           if (selectedCode) {
-            sendSelectedCodeToServer(selectedCode);
-            vscode.window.showInformationMessage(selectedCode);
+            // sendSelectedCodeToServer(selectedCode);
+            let response = await sendCodeToExplain(selectedCode);
+            vscode.window.showInformationMessage(response);
+            webviewView.webview.postMessage({ type: "explain-code", value: response });
           } else {
             vscode.window.showErrorMessage('No code is selected');
           }
@@ -47,10 +51,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case "send-btn":
           {
             let selectedCode = getSelectedCode();
-            let query = data.value + selectedCode;
+            let query = data.value;
+            if (selectedCode){
+              query = selectedCode + "," + query;
+            }
+            
             if (query) {
-              sendSelectedCodeToServer(query);
-              webviewView.webview.postMessage({ type: "update-chatbox", value: query });
+              let response = await sendGeneralPrompt(selectedCode, query);
+              webviewView.webview.postMessage({ type: "send-query", value: response });
               vscode.window.showInformationMessage(query);
             } else {
               vscode.window.showErrorMessage('No query to send');
