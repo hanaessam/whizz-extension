@@ -18,7 +18,6 @@ export async function sendSelectedCodeToServer(selectedCode: string) {
         const response = await axios.post('http://localhost:8888/vscode/highlight', {
             highlightedCode: selectedCode
         });
-        console.log(response.data);
         vscode.window.showInformationMessage('Selected code sent to server successfully');
     } catch (error) {
         console.error('Error sending selected code:', error);
@@ -41,7 +40,6 @@ export async function getGithubProfileInfo() {
     try {
         loginWithGithub();
         const response = await axios.get('http://localhost:8888/github/user');
-        console.log(response.data);
         vscode.window.showInformationMessage('GitHub profile info retrieved successfully: ', response.data);
         return response.data;
     } catch (error) {
@@ -57,7 +55,6 @@ export async function sendCodeToFix(selectedCode: string) {
           type: 'fix',
           codesnippet: selectedCode
       });
-      console.log(response.data);
       vscode.window.showInformationMessage('Code snippet sent to server successfully');
       return response.data; // This will be the output you can use in your webview
   } catch (error) {

@@ -6,34 +6,33 @@
 
   const fixCode = document.querySelector(".fix-code");
   const explainCode = document.querySelector(".explain-code");
-  const generateCodeDocument = document.querySelector(".generate-code-doc");
-  const generateUnitTest = document.querySelector(".generate-unit-test");
+
   const chatInput = document.querySelector(".chat-input");
   const sendButton = document.querySelector(".send-btn");
   const chatbox = document.querySelector(".chat-box");
-  const loginWithGithubButton = document.querySelector(".github-login");
 
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
-  generateCodeDocument.addEventListener("click", generateCodeDocumentClicked);
-  generateUnitTest.addEventListener("click", generateUnitTestClicked);
+ 
 
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
   });
 
-  loginWithGithubButton.addEventListener("click", () => {
-    loginWithGithub();
-  });
-
   function appendMessageToChatbox(message) {
     const newMessageElement = document.createElement("p");
     newMessageElement.className = "chat-message";
-    newMessageElement.textContent = message;
+    newMessageElement.textContent = `Whizz: ${message}`;
     chatbox.appendChild(newMessageElement);
   }
 
+  function appendMessageUserToChatbox(message) {
+    const newMessageElement = document.createElement("p");
+    newMessageElement.className = "chat-message-user";
+    newMessageElement.textContent = `You: ${message}`;
+    chatbox.appendChild(newMessageElement);
+  }
   function updateChatbox() {
     const chatboxContent = chatbox.innerHTML;
     const newContent = chatboxContent;
@@ -74,6 +73,7 @@
       type: "send-btn",
       value: chatInputValue,
     });
+    appendMessageUserToChatbox(chatInputValue);
     chatInput.value = "";
   }
 
@@ -94,10 +94,10 @@
         break;
       case "fix-code":
         appendMessageToChatbox(message.value);
-        break;  
+        break;
       case "explain-code":
         appendMessageToChatbox(message.value);
-        break;  
+        break;
     }
   });
 })();
