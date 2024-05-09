@@ -11,14 +11,18 @@
   const sendButton = document.querySelector(".send-btn");
   const chatbox = document.querySelector(".chat-box");
 
+  const loginWithGithubButton = document.getElementById("github-login-button");
+  const githubUserInfo = document.getElementById("github-user-info");
+
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
- 
 
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
   });
+
+  loginWithGithubButton.addEventListener("click", loginWithGithub);
 
   function appendMessageToChatbox(message) {
     const newMessageElement = document.createElement("p");
@@ -80,7 +84,12 @@
   function loginWithGithub() {
     vscode.postMessage({
       type: "login-with-github",
+      value: "login-with-github clicked",
     });
+  }
+
+  function getGithubUserInfo(message) {
+    githubUserInfo.innerHTML = `Github User Info: ${message}`;
   }
 
   window.addEventListener("message", async (event) => {
@@ -98,6 +107,14 @@
       case "explain-code":
         appendMessageToChatbox(message.value);
         break;
+      case "login-with-github":
+        loginWithGithub();
+        break;
+
+      case "github-user-info": {
+        getGithubUserInfo(message.value);
+        break;
+      }
     }
   });
 })();

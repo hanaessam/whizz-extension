@@ -1,5 +1,7 @@
 import axios from "axios";
 import * as vscode from 'vscode';
+import { baseUri } from "../constants";
+import { TokenManager } from "../authentication/TokenManager";
 
 
 export function getSelectedCode(): string | null {
@@ -15,7 +17,7 @@ export function getSelectedCode(): string | null {
 
 export async function sendSelectedCodeToServer(selectedCode: string) {
     try {
-        const response = await axios.post('http://localhost:8888/vscode/highlight', {
+        const response = await axios.post(`${baseUri}/vscode/highlight`, {
             highlightedCode: selectedCode
         });
         vscode.window.showInformationMessage('Selected code sent to server successfully');
@@ -27,8 +29,7 @@ export async function sendSelectedCodeToServer(selectedCode: string) {
 
 export async function loginWithGithub() {
   try {
-    const response = await axios.get('http://localhost:8888/auth/github');
-    console.log(response.data);
+    const response = await axios.get(`${baseUri}/auth/github`);
     vscode.window.showInformationMessage('Logged in to GitHub successfully');
   } catch (error) {
     console.error('Error logging in to GitHub:', error);
@@ -39,9 +40,11 @@ export async function loginWithGithub() {
 export async function getGithubProfileInfo() {
     try {
         loginWithGithub();
-        const response = await axios.get('http://localhost:8888/github/user');
-        vscode.window.showInformationMessage('GitHub profile info retrieved successfully: ', response.data);
-        return response.data;
+        const response = await axios.get(`${baseUri}/me`, {headers: {Authorization: `Bearer ${TokenManager.getToken()}`}} );
+        const data = JSON.stringify(response.data);
+        console.log(data);
+        vscode.window.showInformationMessage('GitHub profile info retrieved successfully: ', data);
+        return data;
     } catch (error) {
         console.error('Error retrieving GitHub profile info:', error);
         vscode.window.showErrorMessage('Error retrieving GitHub profile info');
@@ -51,7 +54,7 @@ export async function getGithubProfileInfo() {
 
 export async function sendCodeToFix(selectedCode: string) {
   try {
-      const response = await axios.post('http://localhost:8888/openai/prompt', {
+      const response = await axios.post(`${baseUri}/openai/prompt`, {
           type: 'fix',
           codesnippet: selectedCode
       });
@@ -66,7 +69,7 @@ export async function sendCodeToFix(selectedCode: string) {
 
 export async function sendCodeToExplain(selectedCode: string) {
   try {
-      const response = await axios.post('http://localhost:8888/openai/prompt', {
+      const response = await axios.post(`${baseUri}/openai/prompt`, {
           type: 'explain',
           codesnippet: selectedCode
       });
@@ -81,7 +84,7 @@ export async function sendCodeToExplain(selectedCode: string) {
 
 export async function sendGeneralPrompt(codesnippet: string | null, query: string) {
   try {
-      const response = await axios.post('http://localhost:8888/openai/prompt', {
+      const response = await axios.post(`${baseUri}/openai/prompt`, {
           type: 'general',
           codesnippet: codesnippet,
           prompt: query
@@ -94,3 +97,5 @@ export async function sendGeneralPrompt(codesnippet: string | null, query: strin
       vscode.window.showErrorMessage('Error sending prompt to server');
   }
 }
+
+
