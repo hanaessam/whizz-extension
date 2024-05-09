@@ -41,9 +41,7 @@ export async function getGithubProfileInfo() {
     try {
         loginWithGithub();
         const response = await axios.get(`${baseUri}/me`, {headers: {Authorization: `Bearer ${TokenManager.getToken()}`}} );
-        const data = JSON.stringify(response.data);
-        console.log(data);
-        vscode.window.showInformationMessage('GitHub profile info retrieved successfully: ', data);
+        const data = response.data;
         return data;
     } catch (error) {
         console.error('Error retrieving GitHub profile info:', error);

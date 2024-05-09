@@ -89,7 +89,7 @@
   }
 
   function getGithubUserInfo(message) {
-    githubUserInfo.innerHTML = `Github User Info: ${message}`;
+    githubUserInfo.innerHTML = `Github User Info: <br/>Username - ${message.user.username} <br/>Display Name - ${message.user.name}`;
   }
 
   window.addEventListener("message", async (event) => {
