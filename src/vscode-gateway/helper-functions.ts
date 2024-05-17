@@ -97,3 +97,22 @@ export async function sendGeneralPrompt(codesnippet: string | null, query: strin
 }
 
 
+// Function to get JSON representation of all open files
+function getAllOpenFilesJSON() {
+  let allFilesJSON: any[] = [];
+
+  // Get all open documents
+  vscode.workspace.textDocuments.forEach(document => {
+      // Create object for each file
+      let fileObj = {
+          name: document.fileName,
+          path: vscode.workspace.asRelativePath(document.uri),
+          content: document.getText()
+      };
+
+      // Add file object to array
+      allFilesJSON.push(fileObj);
+  });
+
+  return allFilesJSON;
+}
