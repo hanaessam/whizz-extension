@@ -44,6 +44,11 @@
         "command": "whizz.authenticate",
         "title": "Authenticate with Github",
         "category": "Whizz"
+      },
+      {
+        "command": "whizz.getProjectFileArch",
+        "title": "Create Project Skeleton",
+        "category": "Whizz"
       }
     ]
   },

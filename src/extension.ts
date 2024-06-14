@@ -4,7 +4,8 @@ import * as vscode from 'vscode';
 import { SidebarProvider } from './panels/SidebarProvider';
 import { authenticate } from './authentication/authenticate';
 import { TokenManager } from './authentication/TokenManager';
-
+import { getProjectFileArch } from './vscode-gateway/file-architecture';
+import axios, { get } from 'axios';
 
 
 // This method is called when your extension is activated
@@ -31,7 +32,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('whizz.authenticate', () => {
 			authenticate();
-			vscode.window.showInformationMessage(`Authenticating with GitHub: token : ${TokenManager.getToken()}`);
+			// vscode.window.showInformationMessage(`Authenticating with GitHub: token : ${TokenManager.getToken()}`);
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('whizz.getProjectFileArch', async ()=>  {
+			getProjectFileArch(context);
 		})
 	);
 		
