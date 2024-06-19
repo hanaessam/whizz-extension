@@ -12,9 +12,9 @@ import axios, { get } from 'axios';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	TokenManager.globalState = context.globalState;
-	
-	
-	
+
+
+
 	const sidebarProvider = new SidebarProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(
@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 		)
 	);
 	console.log('Congratulations, your extension "whizz" is now active!');
-	
+
 	let disposable = vscode.commands.registerCommand('whizz.helloWorld', () => {
 		vscode.window.showInformationMessage('Hello World from whizz!');
 	});
@@ -37,11 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('whizz.getProjectFileArch', async ()=>  {
+		vscode.commands.registerCommand('whizz.getProjectFileArch', async () => {
 			getProjectFileArch(context);
 		})
 	);
-		
+
 
 	context.subscriptions.push(disposable);
 }
@@ -50,4 +50,4 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
