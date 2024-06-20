@@ -59,11 +59,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             break;
           }
 
-        case "login-with-github": {
-
-          getGithubProfileInfo();
-          break;
-        }
+      
 
         case "onInfo": {
           if (!data.value) {
@@ -77,6 +73,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             return;
           }
           vscode.window.showErrorMessage(data.value);
+          break;
+        }
+
+        case "login-with-github": {
+          let userInfo = await getGithubProfileInfo();
+          webviewView.webview.postMessage({ type: "github-user-info", value: userInfo });
           break;
         }
 
@@ -130,6 +132,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           <p> Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
             With Whizz, expect quick fixes, code explaination, and enhanced productivity right within your IDE. 
           </p>
+          <div class="github-auth">
+            <button id="github-login-button">Login with GitHub</button>
+               <p id="github-user-info"></p>
+                </div>
               
               <h2 class="head-h2">Features</h2>
               
