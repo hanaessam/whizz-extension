@@ -108,6 +108,7 @@ img {
 	flex-direction: column;
 	align-items: start;
 	justify-content: space-evenly;
+
 }
 
 .features a {
@@ -117,4 +118,5 @@ img {
 	margin: 5px 0;
 	padding: 5px;
 	border: solid 1px rgba(255, 255, 255, 0.1);
+	
 }
