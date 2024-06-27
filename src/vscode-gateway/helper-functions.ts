@@ -97,22 +97,27 @@ export async function sendGeneralPrompt(codesnippet: string | null, query: strin
 }
 
 
-// Function to get JSON representation of all open files
-function getAllOpenFilesJSON() {
-  let allFilesJSON: any[] = [];
+// for the summary and tracking part
+let changedFiles: Set<string> = new Set();
 
-  // Get all open documents
-  vscode.workspace.textDocuments.forEach(document => {
-      // Create object for each file
-      let fileObj = {
-          name: document.fileName,
-          path: vscode.workspace.asRelativePath(document.uri),
-          content: document.getText()
-      };
+export function trackFileChange(document: vscode.TextDocument) {
+    const filePath = vscode.workspace.asRelativePath(document.uri);
+    changedFiles.add(filePath);
+}
 
-      // Add file object to array
-      allFilesJSON.push(fileObj);
-  });
-
-  return allFilesJSON;
+export async function processChangedFiles() {
+    if (changedFiles.size > 0) {
+        const filesData = Array.from(changedFiles).map(filePath => {
+            const document = vscode.workspace.textDocuments.find(doc => vscode.workspace.asRelativePath(doc.uri) === filePath);
+            if (document) {
+                return {
+                    name: document.fileName,
+                    path: filePath,
+                    content: document.getText()
+                };
+            }
+        }).filter(Boolean);
+        changedFiles.clear();
+        return filesData;
+    }
 }

@@ -4,15 +4,14 @@ import * as vscode from 'vscode';
 import { SidebarProvider } from './panels/SidebarProvider';
 import { authenticate } from './authentication/authenticate';
 import { TokenManager } from './authentication/TokenManager';
-
+import {trackFileChange, processChangedFiles} from './vscode-gateway/helper-functions';
+import { summarize } from './summary/summarize';
 
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	TokenManager.globalState = context.globalState;
-	
-	
 	
 	const sidebarProvider = new SidebarProvider(context.extensionUri);
 	context.subscriptions.push(
@@ -37,6 +36,15 @@ export function activate(context: vscode.ExtensionContext) {
 		
 
 	context.subscriptions.push(disposable);
+
+	setInterval(async () => {
+        await summarize();
+    }, 30000); // 60000 milliseconds = 1 minute
+
+    // Listen for file changes
+    vscode.workspace.onDidChangeTextDocument(event => {
+        trackFileChange(event.document);
+    });
 }
 
 
