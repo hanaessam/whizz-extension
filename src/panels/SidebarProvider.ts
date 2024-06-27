@@ -1,12 +1,20 @@
 import * as vscode from "vscode";
 import { getNonce } from "../getNonce";
-import { getGithubProfileInfo, getSelectedCode, loginWithGithub, sendCodeToExplain, sendCodeToFix, sendGeneralPrompt, sendSelectedCodeToServer } from "../vscode-gateway/helper-functions";
+import {
+  getGithubProfileInfo,
+  getSelectedCode,
+  loginWithGithub,
+  sendCodeToExplain,
+  sendGeneralPrompt,
+  sendSelectedCodeToServer,
+} from "../vscode-gateway/helper-functions";
+import { fixSelectedCode } from "../vscode-gateway/fix-code";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
 
-  constructor(private readonly _extensionUri: vscode.Uri) { }
+  constructor(private readonly _extensionUri: vscode.Uri) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
@@ -21,12 +29,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "fix-code": {
+          vscode.window.showInformationMessage("will fix code now");
           let selectedCode = getSelectedCode();
           if (selectedCode) {
-            let response = await sendCodeToFix(selectedCode);
-            webviewView.webview.postMessage({ type: "fix-code", value: response });
+            let response = await fixSelectedCode(selectedCode);
+            vscode.window.showInformationMessage(response);
+            webviewView.webview.postMessage({
+              type: "fix-code",
+              value: response,
+            });
           } else {
-            vscode.window.showErrorMessage('No code is selected');
+            vscode.window.showErrorMessage("No code is selected");
           }
           break;
         }
@@ -35,31 +48,34 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           let selectedCode = getSelectedCode();
           if (selectedCode) {
             let response = await sendCodeToExplain(selectedCode);
-            webviewView.webview.postMessage({ type: "explain-code", value: response });
+            webviewView.webview.postMessage({
+              type: "explain-code",
+              value: response,
+            });
           } else {
-            vscode.window.showErrorMessage('No code is selected');
+            vscode.window.showErrorMessage("No code is selected");
           }
           break;
         }
 
-        case "send-btn":
-          {
-            let selectedCode = getSelectedCode();
-            let query = data.value;
-            if (selectedCode) {
-              query = selectedCode + "," + query;
-            }
-
-            if (query) {
-              let response = await sendGeneralPrompt(selectedCode, query);
-              webviewView.webview.postMessage({ type: "send-query", value: response });
-            } else {
-              vscode.window.showErrorMessage('No query to send');
-            }
-            break;
+        case "send-btn": {
+          let selectedCode = getSelectedCode();
+          let query = data.value;
+          if (selectedCode) {
+            query = selectedCode + "," + query;
           }
 
-      
+          if (query) {
+            let response = await sendGeneralPrompt(selectedCode, query);
+            webviewView.webview.postMessage({
+              type: "send-query",
+              value: response,
+            });
+          } else {
+            vscode.window.showErrorMessage("No query to send");
+          }
+          break;
+        }
 
         case "onInfo": {
           if (!data.value) {
@@ -78,10 +94,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         case "login-with-github": {
           let userInfo = await getGithubProfileInfo();
-          webviewView.webview.postMessage({ type: "github-user-info", value: userInfo });
+          webviewView.webview.postMessage({
+            type: "github-user-info",
+            value: userInfo,
+          });
           break;
         }
-
       }
     });
   }
@@ -89,7 +107,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   public revive(panel: vscode.WebviewView) {
     this._view = panel;
   }
-
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     const styleResetUri = webview.asWebviewUri(
@@ -102,7 +119,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
     );
-
 
     const nonce = getNonce();
 
