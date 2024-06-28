@@ -49,6 +49,11 @@
         "command": "whizz.getProjectFileArch",
         "title": "Create Project Skeleton",
         "category": "Whizz"
+      }, 
+      {
+        "command": "whizz.createFileWithCode",
+        "title": "Create File with Code",
+        "category": "Whizz"
       }
     ]
   },
