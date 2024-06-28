@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import { SidebarProvider } from './panels/SidebarProvider';
 import { authenticate } from './authentication/authenticate';
 import { TokenManager } from './authentication/TokenManager';
-import {trackFileChange, processChangedFiles} from './vscode-gateway/helper-functions';
+import {trackFileChange, addAllFiles} from './vscode-gateway/helper-functions';
 import { summarize } from './summary/summarize';
 import { getProjectFileArch } from './vscode-gateway/file-architecture';
 import axios, { get } from 'axios';
@@ -44,11 +44,13 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
-
 	context.subscriptions.push(disposable);
+	
+	addAllFiles(context);
+
 	setInterval(async () => {
-        await summarize();
-    }, 30000); // 60000 milliseconds = 1 minute
+        await summarize(context);
+    }, 60000); // 60000 milliseconds = 1 minute
 
     // Listen for file changes
     vscode.workspace.onDidChangeTextDocument(event => {

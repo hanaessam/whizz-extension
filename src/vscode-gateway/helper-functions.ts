@@ -104,7 +104,24 @@ export function trackFileChange(document: vscode.TextDocument) {
     const filePath = vscode.workspace.asRelativePath(document.uri);
     changedFiles.add(filePath);
 }
-
+export async function addAllFiles(context: vscode.ExtensionContext): Promise<void> {
+    try {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders) {
+            for (const folder of workspaceFolders) {
+                const files = await vscode.workspace.findFiles(new vscode.RelativePattern(folder, '**/*'));
+                files.forEach(file => {
+                    const filePath = vscode.workspace.asRelativePath(file);
+                    changedFiles.add(filePath);
+                });
+            }
+            vscode.window.showInformationMessage('All workspace files added to set.');
+        }
+    } catch (error) {
+        console.error('Error adding all workspace files to set:', error);
+        vscode.window.showErrorMessage('Failed to add all workspace files to set.');
+    }
+}
 export async function processChangedFiles() {
     if (changedFiles.size > 0) {
         const filesData = Array.from(changedFiles).map(filePath => {
