@@ -4,10 +4,11 @@ import * as vscode from 'vscode';
 import { SidebarProvider } from './panels/SidebarProvider';
 import { authenticate } from './authentication/authenticate';
 import { TokenManager } from './authentication/TokenManager';
-import {trackFileChange, addAllFiles} from './vscode-gateway/helper-functions';
-import { summarize } from './summary/summarize';
+import {trackFileChange, addAllFiles, setupFileDeletionWatcher} from './vscode-gateway/helper-functions';
+import { summarize, writeSummaryFile } from './summary/summarize';
 import { getProjectFileArch } from './vscode-gateway/file-architecture';
 import axios, { get } from 'axios';
+let extensionContext: vscode.ExtensionContext;
 
 
 // This method is called when your extension is activated
@@ -15,7 +16,7 @@ import axios, { get } from 'axios';
 export function activate(context: vscode.ExtensionContext) {
 	TokenManager.globalState = context.globalState;
 
-
+	extensionContext = context;
 
 	const sidebarProvider = new SidebarProvider(context.extensionUri);
 	context.subscriptions.push(
@@ -45,12 +46,20 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(disposable);
+
+	setupFileDeletionWatcher(context);
+
+	context.workspaceState.keys().forEach(key => context.workspaceState.update(key, undefined));
 	
 	addAllFiles(context);
 
 	setInterval(async () => {
-        await summarize(context);
+        summarize(context);
     }, 60000); // 60000 milliseconds = 1 minute
+
+	setInterval(async () => {
+		await writeSummaryFile(context);
+	}, 300000); // 300000 milliseconds = 5 minutes
 
     // Listen for file changes
     vscode.workspace.onDidChangeTextDocument(event => {
@@ -58,5 +67,11 @@ export function activate(context: vscode.ExtensionContext) {
     });
 }
 
+export function getExtensionContext(): vscode.ExtensionContext {
+    if (!extensionContext) {
+        throw new Error('Extension context is not initialized.');
+    }
+    return extensionContext;
+}
 // This method is called when your extension is deactivated
 export function deactivate() { }

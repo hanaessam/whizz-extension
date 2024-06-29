@@ -3,41 +3,42 @@ import axios, { get } from 'axios';
 import path from 'path';
 import { processChangedFiles } from '../vscode-gateway/helper-functions';
 import { baseUri } from '../constants';
+import * as fs from 'fs';
 import { storeFileSummary, getFileSummary, getFileSummaryKey, getAllFileSummaries } from './caching';
+
 // Interface for the summary object
 interface Summary {
     name: string;
     path: string;
     content: string; // Assuming content is a string
 }
-const MAX_FILES_PER_REQUEST = 10;
+const MAX_FILES_PER_REQUEST = 1;
 
 export async function summarize(context: vscode.ExtensionContext) {
     try {
         let changedFiles = await processChangedFiles(); // Wait for processChangedFiles to complete
-
+        
         if (changedFiles && changedFiles.length > 0) {
             vscode.window.showInformationMessage('Sending files to backend for summarization.');
 
-            // Calculate number of batches
             const numBatches = Math.ceil(changedFiles.length / MAX_FILES_PER_REQUEST);
-
-            // Array to hold promises for each batch of file summary requests
-            const requests = [];
 
             for (let i = 0; i < numBatches; i++) {
                 const batch = changedFiles.slice(i * MAX_FILES_PER_REQUEST, (i + 1) * MAX_FILES_PER_REQUEST);
 
-                // Make sure batch is not empty before sending
                 if (batch.length > 0) {
-                    const response = await axios.post(`${baseUri}/openai/summarize`, batch);
+                    vscode.window.showInformationMessage(`Sending batch ${i + 1} to backend.`);
 
-                    vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
+                    try {
+                        const response = await axios.post(`${baseUri}/openai/summarize`, batch);
+                        vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
 
-                    // Update the summaries 
-                    await updateSummaries(context, response.data); // Implement this function as per your requirements
-
-                    requests.push(response); // Store response or handle as needed
+                        await updateSummaries(context, response.data);
+                    } catch (error) {
+                        console.error(`Error processing batch ${i + 1}:`, error);
+                        vscode.window.showWarningMessage(`Failed to process batch ${i + 1}.`);
+                        // You can handle the error as per your requirement, like logging, retrying, or ignoring
+                    }
                 }
             }
 
@@ -56,54 +57,39 @@ async function updateSummaries(context: vscode.ExtensionContext, updatedSummarie
     try {
         // Iterate through each updated summary
         for (const updatedSummary of updatedSummaries) {
-            const { name, path, content } = updatedSummary;
-            const key = getFileSummaryKey(path, name);
-
+            const { name, path: filePath, content } = updatedSummary;
             // Store or update the summary for each file
-            await storeFileSummary(context, path, name, content);
+            await storeFileSummary(context, filePath, name, content);
         }
         vscode.window.showInformationMessage('Summaries updated successfully.');
-        const summaries = getAllFileSummaries(context);
-        vscode.window.showInformationMessage(`All summaries: ${JSON.stringify(summaries)}`);
+
+        
     } catch (error) {
         console.error('Error updating summaries:', error);
         vscode.window.showErrorMessage('Failed to update summaries.');
     }
 }
 
-async function getAllFiles(context: vscode.ExtensionContext): Promise<Summary[]> {
-    let allFiles: Summary[] = [];
+export function writeSummaryFile(context: vscode.ExtensionContext){
+    // Retrieve all file summaries
+    const summaries = getAllFileSummaries(context);
+        
+    // Convert summaries to a string for writing to the file
+    const summariesString = JSON.stringify(summaries, null, 2);
 
-    try {
-        // Get all workspace folders
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (workspaceFolders) {
-            // Iterate through each workspace folder
-            for (const folder of workspaceFolders) {
-                // Find all files in the current workspace folder
-                const folderFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(folder, '**/*'));
+    // Get the path to the workspace folder
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders) {
+        const workspaceFolder = workspaceFolders[0].uri.fsPath;
 
-                // Iterate through each file in the folder
-                for (const file of folderFiles) {
-                    const fileName = vscode.workspace.asRelativePath(file, false);
-                    const filePath = vscode.workspace.asRelativePath(file);
-                    // Optionally, read file content if needed
-                    const content = ''; // Adjust this to read file content
+        // Define the path for the summary file
+        const summaryFilePath = path.join(workspaceFolder, 'summary.txt');
 
-                    // Create a summary object and add it to the allFiles array
-                    const fileSummary: Summary = {
-                        name: fileName,
-                        path: filePath,
-                        content: content // Optional, include if you need file content
-                    };
-                    allFiles.push(fileSummary);
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Error fetching all files:', error);
-        vscode.window.showErrorMessage('Failed to fetch all files.');
+        // Write summaries to the file
+        fs.writeFileSync(summaryFilePath, summariesString, 'utf8');
+        vscode.window.showInformationMessage(`Summaries written to ${summaryFilePath}`);
+    } else {
+        vscode.window.showErrorMessage('No workspace folder found.');
     }
 
-    return allFiles;
 }
