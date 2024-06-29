@@ -9,14 +9,8 @@ import { summarize, writeSummaryFile } from './summary/summarize';
 import { getProjectFileArch } from './vscode-gateway/file-architecture';
 import axios, { get } from 'axios';
 let extensionContext: vscode.ExtensionContext;
-
-import * as vscode from "vscode";
-import { SidebarProvider } from "./panels/SidebarProvider";
-import { authenticate } from "./authentication/authenticate";
-import { TokenManager } from "./authentication/TokenManager";
-import { getProjectFileArch } from "./vscode-gateway/file-architecture";
 import { createFileWithCode } from "./vscode-gateway/create-file";
-import axios, { get } from "axios";
+
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
