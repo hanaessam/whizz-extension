@@ -6,6 +6,11 @@ import { authenticate } from "./authentication/authenticate";
 import { TokenManager } from "./authentication/TokenManager";
 import { getProjectFileArch } from "./vscode-gateway/file-architecture";
 import { createFileWithCode } from "./vscode-gateway/create-file";
+import {
+  loginWithEmail,
+  logout,
+  signupWithEmail,
+} from "./authentication/emailauthentication";
 import axios, { get } from "axios";
 
 // This method is called when your extension is activated
@@ -38,6 +43,16 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.createFileWithCode", async () => {
       createFileWithCode(context);
+    })
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.signupWithEmail", async () => {
+      signupWithEmail(context);
+    })
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.loginWithEmail", async () => {
+      loginWithEmail(context);
     })
   );
 
