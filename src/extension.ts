@@ -10,6 +10,13 @@ import { getProjectFileArch } from './vscode-gateway/file-architecture';
 import axios, { get } from 'axios';
 let extensionContext: vscode.ExtensionContext;
 
+import * as vscode from "vscode";
+import { SidebarProvider } from "./panels/SidebarProvider";
+import { authenticate } from "./authentication/authenticate";
+import { TokenManager } from "./authentication/TokenManager";
+import { getProjectFileArch } from "./vscode-gateway/file-architecture";
+import { createFileWithCode } from "./vscode-gateway/create-file";
+import axios, { get } from "axios";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -18,34 +25,35 @@ export function activate(context: vscode.ExtensionContext) {
 
 	extensionContext = context;
 
-	const sidebarProvider = new SidebarProvider(context.extensionUri);
-	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(
-			"whizz-sidebar",
-			sidebarProvider
-		)
-	);
-	console.log('Congratulations, your extension "whizz" is now active!');
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider("whizz-sidebar", sidebarProvider)
+  );
+  console.log('Congratulations, your extension "whizz" is now active!');
 
-	let disposable = vscode.commands.registerCommand('whizz.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from whizz!');
-	});
+  let disposable = vscode.commands.registerCommand("whizz.helloWorld", () => {
+    vscode.window.showInformationMessage("Hello World from whizz!");
+  });
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.authenticate", () => {
+      authenticate();
+      // vscode.window.showInformationMessage(`Authenticating with GitHub: token : ${TokenManager.getToken()}`);
+    })
+  );
 
-	context.subscriptions.push(
-		vscode.commands.registerCommand('whizz.authenticate', () => {
-			authenticate();
-			// vscode.window.showInformationMessage(`Authenticating with GitHub: token : ${TokenManager.getToken()}`);
-		})
-	);
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.getProjectFileArch", async () => {
+      getProjectFileArch(context);
+    })
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.createFileWithCode", async () => {
+      createFileWithCode(context);
+    })
+  );
 
-	context.subscriptions.push(
-		vscode.commands.registerCommand('whizz.getProjectFileArch', async () => {
-			getProjectFileArch(context);
-		})
-	);
-
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable);
 
 	setupFileDeletionWatcher(context);
 
@@ -74,4 +82,4 @@ export function getExtensionContext(): vscode.ExtensionContext {
     return extensionContext;
 }
 // This method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}
