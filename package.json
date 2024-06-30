@@ -54,6 +54,18 @@
         "command": "whizz.createFileWithCode",
         "title": "Create File with Code",
         "category": "Whizz"
+      }, 
+      {
+        "command": "whizz.signupWithEmail",
+        "title": "Sign Up" , 
+        "category": "Whizz"
+
+      }, 
+      {
+        "command": "whizz.loginWithEmail",
+        "title": "Login", 
+        "category": "Whizz"
+
       }
     ]
   },
