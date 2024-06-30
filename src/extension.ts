@@ -10,6 +10,7 @@ import { getProjectFileArch } from './vscode-gateway/file-architecture';
 import axios, { get } from 'axios';
 let extensionContext: vscode.ExtensionContext;
 import { createFileWithCode } from "./vscode-gateway/create-file";
+import { signupWithEmail , loginWithEmail } from './authentication/emailauthentication';
 
 
 // This method is called when your extension is activated
