@@ -107,7 +107,7 @@ export async function sendGeneralPrompt(
     });
     console.log(response.data);
     vscode.window.showInformationMessage("Prompt sent to server successfully");
-    return response.data; // This will be the output you can use in your webview
+    return response.data.answer; // This will be the output you can use in your webview
   } catch (error) {
     console.error("Error sending prompt:", error);
     vscode.window.showErrorMessage("Error sending prompt to server");
