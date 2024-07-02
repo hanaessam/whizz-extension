@@ -7,10 +7,9 @@ import { TokenManager } from './authentication/TokenManager';
 import {trackFileChange, addAllFiles, setupFileDeletionWatcher} from './vscode-gateway/helper-functions';
 import { summarize, writeSummaryFile } from './summary/summarize';
 import { getProjectFileArch } from './vscode-gateway/file-architecture';
-import axios, { get } from 'axios';
 let extensionContext: vscode.ExtensionContext;
 import { createFileWithCode } from "./vscode-gateway/create-file";
-
+import { showInitialForm } from "./panels/openAiKey";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -18,6 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
 	TokenManager.globalState = context.globalState;
 
 	extensionContext = context;
+
+  showInitialForm(context);
 
   const sidebarProvider = new SidebarProvider(context.extensionUri);
   context.subscriptions.push(
@@ -63,10 +64,11 @@ export function activate(context: vscode.ExtensionContext) {
 		await writeSummaryFile(context);
 	}, 300000); // 300000 milliseconds = 5 minutes
 
-    // Listen for file changes
-    vscode.workspace.onDidChangeTextDocument(event => {
-        trackFileChange(event.document);
-    });
+  // Listen for file changes
+  vscode.workspace.onDidChangeTextDocument(event => {
+      trackFileChange(event.document);
+  });
+
 }
 
 export function getExtensionContext(): vscode.ExtensionContext {
