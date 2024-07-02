@@ -6,6 +6,9 @@
 
   const fixCode = document.querySelector(".fix-code");
   const explainCode = document.querySelector(".explain-code");
+  const generateCodeDocument = document.querySelector(".generate-code-documentation");
+  const generateUnitTest = document.querySelector(".unit-test");
+  const createFileArch = document.querySelector(".create-file-arch");
 
   const chatInput = document.querySelector(".chat-input");
   const sendButton = document.querySelector(".send-btn");
@@ -16,6 +19,9 @@
 
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
+  generateCodeDocument.addEventListener("click", generateCodeDocumentClicked);
+  generateUnitTest.addEventListener("click", generateUnitTestClicked);
+  createFileArch.addEventListener("click", createFileArchClicked);
 
   sendButton.addEventListener("click", () => {
     sendChatInput();
@@ -59,8 +65,8 @@
 
   function generateCodeDocumentClicked() {
     vscode.postMessage({
-      type: "generate-code-document",
-      value: "generate-code-document clicked",
+      type: "generate-code-documentation",
+      value: "generate-code-documentation clicked",
     });
   }
 
@@ -68,6 +74,13 @@
     vscode.postMessage({
       type: "generate-unit-test",
       value: "generate-unit-test clicked",
+    });
+  }
+
+  function createFileArchClicked() {
+    vscode.postMessage({
+      type: "create-file-arch",
+      value: "create-file-arch clicked",
     });
   }
 
@@ -109,6 +122,18 @@
         break;
       case "login-with-github":
         loginWithGithub();
+        break;
+
+      case "generate-code-documentation":
+        generateCodeDocumentClicked();
+        break;
+
+      case "generate-unit-test":
+        generateUnitTestClicked();
+        break;
+
+      case "create-file-arch":
+        createFileArchClicked();
         break;
 
       case "github-user-info": {

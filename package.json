@@ -36,6 +36,11 @@
     },
     "commands": [
       {
+        "command": "whizz.helloWorld",
+        "title": "Hello World",
+        "category": "Whizz"
+      },
+      {
         "command": "whizz.sendSelectedCode",
         "title": "Send code snippet",
         "category": "Whizz"
@@ -53,6 +58,16 @@
       {
         "command": "whizz.createFileWithCode",
         "title": "Create File with Code",
+        "category": "Whizz"
+      },
+      {
+        "command": "whizz.generateUnitTest",
+        "title": "Generate Unit Test",
+        "category": "Whizz"
+      },
+      {
+        "command": "whizz.generateCodeDocumentation",
+        "title": "Generate Code Documentation",
         "category": "Whizz"
       }
     ]

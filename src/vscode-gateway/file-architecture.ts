@@ -24,6 +24,7 @@ export async function getProjectFileArch(context: vscode.ExtensionContext) {
             // Wait for project files to be created
             await createProjectFiles(projectStructure, '', projectName);
             vscode.window.showInformationMessage('Project generated successfully!');
+            vscode.window.showInformationMessage(`Execute the following commands:\n${postCreationCommands.join('\n')}`);
 
              // Execute commands after project creation
              executePostCreationCommands(projectName, postCreationCommands);
@@ -69,7 +70,7 @@ async function createProjectFiles(structure: any[], basePath: string, projectNam
 
 
 async function executePostCreationCommands(projectName: string, commands: string[]) {
-    const terminal = vscode.window.createTerminal({ cwd: path.join(vscode.workspace.workspaceFolders![0].uri.fsPath, projectName) });
+    const terminal = vscode.window.createTerminal({ cwd: path.join(vscode.workspace.workspaceFolders![0].uri.fsPath, projectName,'') });
     terminal.show();
 
     // Execute each command from the commands array

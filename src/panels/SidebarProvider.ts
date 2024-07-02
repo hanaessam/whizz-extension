@@ -9,12 +9,18 @@ import {
   sendSelectedCodeToServer,
 } from "../vscode-gateway/helper-functions";
 import { fixSelectedCode } from "../vscode-gateway/fix-code";
+import { getProjectFileArch } from "../vscode-gateway/file-architecture";
+import { generateCodeDocumentation } from "../vscode-gateway/generate-code-doc";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
+  _context: vscode.ExtensionContext;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(private readonly _extensionUri: vscode.Uri, 
+    context: vscode.ExtensionContext) {
+    this._context = context;
+  }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
@@ -74,6 +80,32 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           } else {
             vscode.window.showErrorMessage("No query to send");
           }
+          break;
+        }
+
+        case "create-file-arch": {
+          vscode.window.showInformationMessage("Creating file architecture");
+          getProjectFileArch(this._context).then(() => {
+            vscode.window.showInformationMessage("File architecture creation complete.");
+          }).catch((error) => {
+            vscode.window.showErrorMessage("Failed to create file architecture: " + error.message);
+          });
+          break;
+        }
+
+        case "generate-unit-test": {
+          vscode.window.showInformationMessage("Generating unit test");
+          // getProjectFileArch(this._context!)
+          break;
+        }
+
+        case "generate-code-documentation": {
+          vscode.window.showInformationMessage("Generating code documentation");
+          generateCodeDocumentation(this._context).then(() => {
+            vscode.window.showInformationMessage("Code documentation generated successfully.");
+          }).catch((error) => {
+            vscode.window.showErrorMessage("Failed to generate code documentation: " + error.message);
+          });
           break;
         }
 
@@ -148,16 +180,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           <p> Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
             With Whizz, expect quick fixes, code explaination, and enhanced productivity right within your IDE. 
           </p>
-          <div class="github-auth">
-            <button id="github-login-button">Login with GitHub</button>
-               <p id="github-user-info"></p>
-                </div>
+         
               
               <h2 class="head-h2">Features</h2>
               
               <div class="features">
                 <a href="" class="fix-code"><i class="fa-solid fa-wrench"></i> Fix</a>
                 <a href="" class="explain-code"><i class="fa-regular fa-lightbulb"></i> Explain</a>
+                <a href="" class="generate-code-documentation"><i class="fa-solid fa-file-lines"></i> Generate Code Documentation</a>
+                <a href="" class="unit-test"><i class="fa-solid fa-vial-circle-check"></i> Generate Unit Test</a>
+                <a href="" class="create-file-arch"><i class="fa-solid fa-folder-tree"></i> Create Project File Architecture</a>
+                <a href="" class="switch-code-lang"><i class="fa-regular fa-file-code"></i> Switch Code Language</a>
               </div>
               
               <h2 class="head-h2">Chat</h2>
