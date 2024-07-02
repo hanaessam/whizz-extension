@@ -3,6 +3,7 @@ import axios from 'axios';
 import { baseUri } from '../constants';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 export async function getProjectFileArch(context: vscode.ExtensionContext) {
     const projectName = await vscode.window.showInputBox({ placeHolder: 'Enter project name' });
@@ -21,20 +22,17 @@ export async function getProjectFileArch(context: vscode.ExtensionContext) {
 
             console.log(postCreationCommands);
             
-            // Wait for project files to be created
-            await createProjectFiles(projectStructure, '', projectName);
-            vscode.window.showInformationMessage('Project generated successfully!');
+            await createProjectFiles(projectStructure, '', projectName).then(() => {;
+            vscode.window.showInformationMessage('Project created successfully!');
             vscode.window.showInformationMessage(`Execute the following commands:\n${postCreationCommands.join('\n')}`);
 
-             // Execute commands after project creation
-             executePostCreationCommands(projectName, postCreationCommands);
+            executePostCreationCommands(projectName, postCreationCommands);
+            });
         } catch (error: any) {
-            vscode.window.showErrorMessage('Failed to generate project: ' + error.message);
+            vscode.window.showErrorMessage(`Failed to generate project: ${error.response?.data?.message || error.message}`);
         }
     }
 }
-
-
 
 async function createProjectFiles(structure: any[], basePath: string, projectName: string) {
     let workspaceRoot: string;
@@ -43,14 +41,13 @@ async function createProjectFiles(structure: any[], basePath: string, projectNam
     if (workspaceFolders && workspaceFolders.length > 0) {
         workspaceRoot = workspaceFolders[0].uri.fsPath;
     } else {
-        // Define the path where the new project folder will be created. This can be adjusted as needed.
-        const defaultPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : path.join(require('os').homedir(), 'Documents');
+        const defaultPath = path.join(os.homedir(), 'Documents');
         workspaceRoot = path.join(defaultPath, projectName);
         try {
             fs.mkdirSync(workspaceRoot, { recursive: true });
             await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(workspaceRoot), false);
-        } catch (error) {
-            vscode.window.showErrorMessage('Failed to create project folder: ' + (error as any).message);
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to create project folder: ${error.message}`);
             return;
         }
     }
@@ -66,15 +63,22 @@ async function createProjectFiles(structure: any[], basePath: string, projectNam
             fs.writeFileSync(itemPath, item.content, 'utf8');
         }
     }
+
+    // Add the new project folder to the current workspace
+    if (vscode.workspace.workspaceFolders) {
+        vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders.length, 0, { uri: vscode.Uri.file(workspaceRoot) });
+    }
 }
 
-
 async function executePostCreationCommands(projectName: string, commands: string[]) {
-    const terminal = vscode.window.createTerminal({ cwd: path.join(vscode.workspace.workspaceFolders![0].uri.fsPath, projectName,'') });
-    terminal.show();
+    try {
+        const terminal = vscode.window.createTerminal({ name: `Setup ${projectName}`, cwd: path.join(vscode.workspace.workspaceFolders![0].uri.fsPath, projectName) });
+        terminal.show();
 
-    // Execute each command from the commands array
-    for (const command of commands) {
-        terminal.sendText(command, true);
+        for (const command of commands) {
+            terminal.sendText(command, true);
+        }
+    } catch (error:any) {
+        vscode.window.showErrorMessage(`Failed to execute post-creation commands: ${error.message}`);
     }
 }
