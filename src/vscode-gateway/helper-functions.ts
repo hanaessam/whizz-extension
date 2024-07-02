@@ -85,6 +85,8 @@ export async function sendCodeToExplain(selectedCode: string) {
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
     );
+    console.log(response.data.answer);
+    
     return response.data.answer; // This will be the output you can use in your webview
   } catch (error) {
     console.error("Error sending code snippet:", error);
@@ -138,15 +140,13 @@ export function trackFileChange(document: vscode.TextDocument) {
   const filePath = vscode.workspace.asRelativePath(document.uri);
   if (!isMediaFile(filePath)) {
     changedFiles.add(filePath);
-    // vscode.window.showInformationMessage("ADDED: ", filePath);
+    vscode.window.showInformationMessage("ADDED: ", filePath);
   }
 }
 
 export async function addAllFiles(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  
-  // vscode.window.showInformationMessage("INSIDE ADD FILEs");
   try {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders) {
@@ -165,7 +165,7 @@ export async function addAllFiles(
         files.forEach((file) => {
           const filePath = vscode.workspace.asRelativePath(file);
           if (!isMediaFile(filePath)) {
-            // vscode.window.showInformationMessage("ADDED: ", filePath);
+            vscode.window.showInformationMessage("ADDED: ", filePath);
             changedFiles.add(filePath);
           }
         });
@@ -212,16 +212,16 @@ export async function processChangedFiles() {
         try {
           // Read the file content directly using Node.js fs module with correct encoding
           const content = await fsp.readFile(absolutePath, "utf-8");
-          vscode.window.showInformationMessage(
-            `file size: `,
-            Buffer.byteLength(content, "utf-8").toString()
-          );
+          // vscode.window.showInformationMessage(
+          //   `file size: `,
+          //   Buffer.byteLength(content, "utf-8").toString()
+          // );
           // Check if content size exceeds the maximum allowed size
           if (Buffer.byteLength(content, "utf-8") > MAX_FILE_SIZE_BYTES) {
             // File content exceeds the size limit
-            vscode.window.showWarningMessage(
-              `${absolutePath} exceeds the maximum allowed size (1 MB). Skipping.`
-            );
+            // vscode.window.showWarningMessage(
+            //   `${absolutePath} exceeds the maximum allowed size (1 MB). Skipping.`
+            // );
             return null; // Return null to filter out this file
           }
 
