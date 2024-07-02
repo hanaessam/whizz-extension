@@ -35,7 +35,7 @@ export async function summarize(context: vscode.ExtensionContext) {
 
                         await updateSummaries(context, response.data);
                     } catch (error) {
-                        console.error(`Error processing batch ${i + 1}:`, error);
+                        // console.error(`Error processing batch ${i + 1}:`, error);
                         // vscode.window.showWarningMessage(`Failed to process batch ${i + 1}.`);
                         // You can handle the error as per your requirement, like logging, retrying, or ignoring
                     }

@@ -165,7 +165,7 @@ export async function addAllFiles(
         files.forEach((file) => {
           const filePath = vscode.workspace.asRelativePath(file);
           if (!isMediaFile(filePath)) {
-            vscode.window.showInformationMessage("ADDED: ", filePath);
+            // vscode.window.showInformationMessage("ADDED: ", filePath);
             changedFiles.add(filePath);
           }
         });
