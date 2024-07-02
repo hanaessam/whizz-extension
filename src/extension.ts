@@ -83,14 +83,22 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 
-  setupFileDeletionWatcher(context);
+  // setupFileDeletionWatcher(context);
 
-  context.workspaceState
+  // context.workspaceState
+  //   .keys()
+  //   .forEach((key) => context.workspaceState.update(key, undefined));
+
+  // addAllFiles(context);
+  
+  if(vscode.workspace.workspaceFolders){
+
+    context.workspaceState
     .keys()
     .forEach((key) => context.workspaceState.update(key, undefined));
 
-  addAllFiles(context);
-  
+    addAllFiles(context);
+  }
 
   setInterval(async () => {
     summarize(context);
@@ -100,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
     await writeSummaryFile(context);
   }, 300000); // 300000 milliseconds = 5 minutes
 
-  // Listen for file changes
+  //Listen for file changes
   vscode.workspace.onDidChangeTextDocument((event) => {
     trackFileChange(event.document);
   });

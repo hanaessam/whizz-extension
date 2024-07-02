@@ -11,6 +11,7 @@ import {
 import { fixSelectedCode } from "../vscode-gateway/fix-code";
 import { getProjectFileArch } from "../vscode-gateway/file-architecture";
 import { generateCodeDocumentation } from "../vscode-gateway/generate-code-doc";
+import { createFileWithCode } from "../vscode-gateway/create-file";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -96,6 +97,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case "generate-unit-test": {
           vscode.window.showInformationMessage("Generating unit test");
           // getProjectFileArch(this._context!)
+          break;
+        }
+
+        case "switch-code-lang": {
+          vscode.window.showInformationMessage("Switching code language");
+          createFileWithCode(this._context).then(() => {
+            vscode.window.showInformationMessage("File created successfully.");
+          }).catch((error) => {
+            vscode.window.showErrorMessage("Failed to create file: " + error.message);
+          }
+          );
           break;
         }
 

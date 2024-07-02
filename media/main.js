@@ -9,6 +9,7 @@
   const generateCodeDocument = document.querySelector(".generate-code-documentation");
   const generateUnitTest = document.querySelector(".unit-test");
   const createFileArch = document.querySelector(".create-file-arch");
+  const switchCodeLanguage = document.querySelector(".switch-code-lang");
 
   const chatInput = document.querySelector(".chat-input");
   const sendButton = document.querySelector(".send-btn");
@@ -22,6 +23,14 @@
   generateCodeDocument.addEventListener("click", generateCodeDocumentClicked);
   generateUnitTest.addEventListener("click", generateUnitTestClicked);
   createFileArch.addEventListener("click", createFileArchClicked);
+  switchCodeLanguage.addEventListener("click", switchCodeLanguageClicked );
+
+  switchCodeLanguageClicked = () => {
+    vscode.postMessage({
+      type: "switch-code-lang",
+      value: "switch-code-lang clicked",
+    });
+  };
 
   sendButton.addEventListener("click", () => {
     sendChatInput();
@@ -140,6 +149,10 @@
         getGithubUserInfo(message.value);
         break;
       }
+
+      case "switch-code-lang":
+        switchCodeLanguageClicked();
+        break;
     }
   });
 })();

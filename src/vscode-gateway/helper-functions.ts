@@ -85,6 +85,8 @@ export async function sendCodeToExplain(selectedCode: string) {
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
     );
+    console.log(response.data.answer);
+    
     return response.data.answer; // This will be the output you can use in your webview
   } catch (error) {
     console.error("Error sending code snippet:", error);
@@ -138,15 +140,13 @@ export function trackFileChange(document: vscode.TextDocument) {
   const filePath = vscode.workspace.asRelativePath(document.uri);
   if (!isMediaFile(filePath)) {
     changedFiles.add(filePath);
-    // vscode.window.showInformationMessage("ADDED: ", filePath);
+    vscode.window.showInformationMessage("ADDED: ", filePath);
   }
 }
 
 export async function addAllFiles(
   context: vscode.ExtensionContext
 ): Promise<void> {
-  
-  // vscode.window.showInformationMessage("INSIDE ADD FILEs");
   try {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders) {
@@ -165,7 +165,7 @@ export async function addAllFiles(
         files.forEach((file) => {
           const filePath = vscode.workspace.asRelativePath(file);
           if (!isMediaFile(filePath)) {
-            // vscode.window.showInformationMessage("ADDED: ", filePath);
+            vscode.window.showInformationMessage("ADDED: ", filePath);
             changedFiles.add(filePath);
           }
         });
