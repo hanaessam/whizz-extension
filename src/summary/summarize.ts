@@ -27,16 +27,16 @@ export async function summarize(context: vscode.ExtensionContext) {
                 const batch = changedFiles.slice(i * MAX_FILES_PER_REQUEST, (i + 1) * MAX_FILES_PER_REQUEST);
 
                 if (batch.length > 0) {
-                    vscode.window.showInformationMessage(`Sending batch ${i + 1} to backend.`);
+                    // vscode.window.showInformationMessage(`Sending batch ${i + 1} to backend.`);
 
                     try {
                         const response = await axios.post(`${baseUri}/openai/summarize`, batch);
-                        vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
+                        // vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
 
                         await updateSummaries(context, response.data);
                     } catch (error) {
                         console.error(`Error processing batch ${i + 1}:`, error);
-                        vscode.window.showWarningMessage(`Failed to process batch ${i + 1}.`);
+                        // vscode.window.showWarningMessage(`Failed to process batch ${i + 1}.`);
                         // You can handle the error as per your requirement, like logging, retrying, or ignoring
                     }
                 }

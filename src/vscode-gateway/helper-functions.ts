@@ -138,13 +138,15 @@ export function trackFileChange(document: vscode.TextDocument) {
   const filePath = vscode.workspace.asRelativePath(document.uri);
   if (!isMediaFile(filePath)) {
     changedFiles.add(filePath);
-    vscode.window.showInformationMessage("ADDED: ", filePath);
+    // vscode.window.showInformationMessage("ADDED: ", filePath);
   }
 }
 
 export async function addAllFiles(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  
+  // vscode.window.showInformationMessage("INSIDE ADD FILEs");
   try {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders) {
@@ -163,7 +165,7 @@ export async function addAllFiles(
         files.forEach((file) => {
           const filePath = vscode.workspace.asRelativePath(file);
           if (!isMediaFile(filePath)) {
-            vscode.window.showInformationMessage("ADDED: ", filePath);
+            // vscode.window.showInformationMessage("ADDED: ", filePath);
             changedFiles.add(filePath);
           }
         });

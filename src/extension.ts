@@ -22,7 +22,6 @@ import * as path from "path";
 import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
 
 
-let activeWorkspaceFolder: vscode.WorkspaceFolder | undefined = vscode.workspace.workspaceFolders?.[0];
 
 
 // This method is called when your extension is activated
@@ -90,13 +89,8 @@ export function activate(context: vscode.ExtensionContext) {
     .keys()
     .forEach((key) => context.workspaceState.update(key, undefined));
 
+  addAllFiles(context);
   
-  vscode.workspace.onDidChangeWorkspaceFolders(event => {
-    if (event.added.length > 0) {
-        activeWorkspaceFolder = event.added[0];
-        addAllFiles(context);
-    }
-  });
 
   setInterval(async () => {
     summarize(context);
