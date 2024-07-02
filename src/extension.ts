@@ -9,7 +9,7 @@ import { summarize, writeSummaryFile } from './summary/summarize';
 import { getProjectFileArch } from './vscode-gateway/file-architecture';
 let extensionContext: vscode.ExtensionContext;
 import { createFileWithCode } from "./vscode-gateway/create-file";
-import { showInitialForm } from "./panels/openAiKey";
+import { showInitialForm } from "./panels/OpenAiKey";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
