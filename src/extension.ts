@@ -85,11 +85,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   setupFileDeletionWatcher(context);
 
-  context.workspaceState
-    .keys()
-    .forEach((key) => context.workspaceState.update(key, undefined));
+  if(vscode.workspace.workspaceFolders){
+    
+    
+  }
+  
+  context.subscriptions.push(
+      vscode.workspace.onDidChangeWorkspaceFolders(event => {
+        context.workspaceState
+        .keys()
+        .forEach((key) => context.workspaceState.update(key, undefined));
 
-  addAllFiles(context);
+        addAllFiles(context);        
+      })
+  );
   
 
   setInterval(async () => {

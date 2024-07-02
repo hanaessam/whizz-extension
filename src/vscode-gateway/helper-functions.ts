@@ -212,16 +212,16 @@ export async function processChangedFiles() {
         try {
           // Read the file content directly using Node.js fs module with correct encoding
           const content = await fsp.readFile(absolutePath, "utf-8");
-          vscode.window.showInformationMessage(
-            `file size: `,
-            Buffer.byteLength(content, "utf-8").toString()
-          );
+          // vscode.window.showInformationMessage(
+          //   `file size: `,
+          //   Buffer.byteLength(content, "utf-8").toString()
+          // );
           // Check if content size exceeds the maximum allowed size
           if (Buffer.byteLength(content, "utf-8") > MAX_FILE_SIZE_BYTES) {
             // File content exceeds the size limit
-            vscode.window.showWarningMessage(
-              `${absolutePath} exceeds the maximum allowed size (1 MB). Skipping.`
-            );
+            // vscode.window.showWarningMessage(
+            //   `${absolutePath} exceeds the maximum allowed size (1 MB). Skipping.`
+            // );
             return null; // Return null to filter out this file
           }
 
