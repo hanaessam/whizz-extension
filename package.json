@@ -69,6 +69,18 @@
         "command": "whizz.generateCodeDocumentation",
         "title": "Generate Code Documentation",
         "category": "Whizz"
+      }, 
+      {
+        "command": "whizz.signupWithEmail",
+        "title": "Sign Up" , 
+        "category": "Whizz"
+
+      }, 
+      {
+        "command": "whizz.loginWithEmail",
+        "title": "Login", 
+        "category": "Whizz"
+
       }
     ]
   },
@@ -88,7 +100,7 @@
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
     "@types/polka": "^0.5.7",
-    "@types/vscode": "^1.86.0",
+    "@types/vscode": "^1.89.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
