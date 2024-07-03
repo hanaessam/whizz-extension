@@ -146,6 +146,8 @@ function isMediaFile(filePath: string): boolean {
     ".pdf",
     "jff",
     ".txt",
+    ".rar",
+    ".zip"
   ];
   const ext = path.extname(filePath).toLowerCase();
   return mediaExtensions.includes(ext);
@@ -158,7 +160,6 @@ export function trackFileChange(document: vscode.TextDocument) {
   const filePath = vscode.workspace.asRelativePath(document.uri);
   if (!isMediaFile(filePath)) {
     changedFiles.add(filePath);
-    vscode.window.showInformationMessage("ADDED: ", filePath);
   }
 }
 
@@ -193,18 +194,22 @@ export async function addAllFiles(
 
       // Write file paths to files.txt
       const workspacePath = workspaceFolders[0].uri.fsPath;
-      const filesFilePath = path.join(workspacePath, "files.txt");
+      const summaryDir = path.join(workspacePath, 'whizz');
+      const filesFilePath = path.join(summaryDir, "files.txt");
       const fileStream = fs.createWriteStream(filesFilePath);
-
+      // Create the directory if it doesn't exist
+      if (!fs.existsSync(summaryDir)) {
+        fs.mkdirSync(summaryDir, { recursive: true });
+    }
       changedFiles.forEach((filePath) => {
         fileStream.write(filePath + "\n");
       });
 
       fileStream.end();
 
-      vscode.window.showInformationMessage(
-        `File paths written to ${filesFilePath}`
-      );
+      // vscode.window.showInformationMessage(
+      //   `File paths written to ${filesFilePath}`
+      // );
     }
   } catch (error) {
     console.error("Error adding all workspace files to set:", error);
@@ -249,7 +254,7 @@ export async function processChangedFiles() {
             content: content,
           };
         } catch (error) {
-          vscode.window.showErrorMessage(`Couldn't read ${absolutePath}`);
+          // vscode.window.showErrorMessage(`Couldn't read ${absolutePath}`);
           console.error(`Error reading file ${filePath}:`, error);
           return null;
         }
@@ -260,9 +265,9 @@ export async function processChangedFiles() {
     const validFilesData = filesData.filter((file) => file !== null);
 
     // Show the information message with changed files data (for debugging purposes)
-    vscode.window.showInformationMessage(
-      `Changed files: ${JSON.stringify(validFilesData)}`
-    );
+    // vscode.window.showInformationMessage(
+    //   `Changed files: ${JSON.stringify(validFilesData)}`
+    // );
 
     // Clear the changed files set
     changedFiles.clear();
@@ -284,6 +289,18 @@ export function setupFileDeletionWatcher(context: vscode.ExtensionContext) {
   context.subscriptions.push(watcher);
 }
 
+export function setupFileAdditionWatcher(context: vscode.ExtensionContext) {
+  // Create a FileSystemWatcher to monitor all files in the workspace
+  const watcher = vscode.workspace.createFileSystemWatcher("**/*");
+
+  // Handle file additions
+  watcher.onDidCreate((uri) => handleFileAddition(uri, context));
+
+  // Add the watcher to the subscriptions to ensure it is cleaned up
+  context.subscriptions.push(watcher);
+}
+
+
 // Function to handle file deletions
 function handleFileDeletion(uri: vscode.Uri, context: vscode.ExtensionContext) {
   const filePath = vscode.workspace.asRelativePath(uri);
@@ -295,4 +312,14 @@ function handleFileDeletion(uri: vscode.Uri, context: vscode.ExtensionContext) {
   vscode.window.showInformationMessage(
     `File ${filePath} has been deleted and its state has been removed.`
   );
+}
+
+function handleFileAddition(uri: vscode.Uri, context: vscode.ExtensionContext) {
+  const filePath = vscode.workspace.asRelativePath(uri);
+  if (!isMediaFile(filePath)) {
+      // Read the document content and call trackFileChange
+      vscode.workspace.openTextDocument(uri).then(document => {
+          trackFileChange(document);
+      });
+  }
 }
