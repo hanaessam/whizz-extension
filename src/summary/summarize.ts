@@ -19,7 +19,7 @@ export async function summarize(context: vscode.ExtensionContext) {
         let changedFiles = await processChangedFiles(); // Wait for processChangedFiles to complete
         
         if (changedFiles && changedFiles.length > 0) {
-            vscode.window.showInformationMessage('Sending files to backend for summarization.');
+            // vscode.window.showInformationMessage('Sending files to backend for summarization.');
 
             const numBatches = Math.ceil(changedFiles.length / MAX_FILES_PER_REQUEST);
 
@@ -27,22 +27,22 @@ export async function summarize(context: vscode.ExtensionContext) {
                 const batch = changedFiles.slice(i * MAX_FILES_PER_REQUEST, (i + 1) * MAX_FILES_PER_REQUEST);
 
                 if (batch.length > 0) {
-                    vscode.window.showInformationMessage(`Sending batch ${i + 1} to backend.`);
+                    // vscode.window.showInformationMessage(`Sending batch ${i + 1} to backend.`);
 
                     try {
                         const response = await axios.post(`${baseUri}/openai/summarize`, batch);
-                        vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
+                        // vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
 
                         await updateSummaries(context, response.data);
                     } catch (error) {
                         console.error(`Error processing batch ${i + 1}:`, error);
-                        vscode.window.showWarningMessage(`Failed to process batch ${i + 1}.`);
+                        // vscode.window.showWarningMessage(`Failed to process batch ${i + 1}.`);
                         // You can handle the error as per your requirement, like logging, retrying, or ignoring
                     }
                 }
             }
 
-            vscode.window.showInformationMessage('Summarization for all files completed.');
+            // vscode.window.showInformationMessage('Summarization for all files completed.');
 
         } else {
             vscode.window.showInformationMessage('No files to summarize.');
@@ -61,19 +61,19 @@ async function updateSummaries(context: vscode.ExtensionContext, updatedSummarie
             // Store or update the summary for each file
             await storeFileSummary(context, filePath, name, content);
         }
-        vscode.window.showInformationMessage('Summaries updated successfully.');
+        // vscode.window.showInformationMessage('Summaries updated successfully.');
 
         
     } catch (error) {
         console.error('Error updating summaries:', error);
-        vscode.window.showErrorMessage('Failed to update summaries.');
+        // vscode.window.showErrorMessage('Failed to update summaries.');
     }
 }
 
-export function writeSummaryFile(context: vscode.ExtensionContext){
+export function writeSummaryFile(context: vscode.ExtensionContext) {
     // Retrieve all file summaries
     const summaries = getAllFileSummaries(context);
-        
+    
     // Convert summaries to a string for writing to the file
     const summariesString = JSON.stringify(summaries, null, 2);
 
@@ -83,7 +83,13 @@ export function writeSummaryFile(context: vscode.ExtensionContext){
         const workspaceFolder = workspaceFolders[0].uri.fsPath;
 
         // Define the path for the summary file
-        const summaryFilePath = path.join(workspaceFolder, 'summary.txt');
+        const summaryDir = path.join(workspaceFolder, 'whizz');
+        const summaryFilePath = path.join(summaryDir, 'summary.txt');
+
+        // Create the directory if it doesn't exist
+        if (!fs.existsSync(summaryDir)) {
+            fs.mkdirSync(summaryDir, { recursive: true });
+        }
 
         // Write summaries to the file
         fs.writeFileSync(summaryFilePath, summariesString, 'utf8');
@@ -91,5 +97,4 @@ export function writeSummaryFile(context: vscode.ExtensionContext){
     } else {
         vscode.window.showErrorMessage('No workspace folder found.');
     }
-
 }
