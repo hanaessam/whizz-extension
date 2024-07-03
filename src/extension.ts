@@ -29,21 +29,18 @@ import { handleWorkspaceChange } from "./summary/caching";
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
-
   extensionContext = context;
 
-  extensionContext = context;
-
-  const sidebarProvider = new SidebarProvider(context.extensionUri, context);
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("whizz-sidebar", sidebarProvider)
   );
   console.log('Congratulations, your extension "whizz" is now active!');
 
-  let disposable = vscode.commands.registerCommand("whizz.helloWorld",async () => {
+  let disposable = vscode.commands.registerCommand("whizz.helloWorld", async () => {
     vscode.window.showInformationMessage("Hello World from whizz!");
-    
-   
+
+
   });
 
   context.subscriptions.push(
@@ -106,7 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
     await writeSummaryFile(context);
   }, 300000); // 300000 milliseconds = 5 minutes
 
-  // Listen for file changes
+  //Listen for file changes
   vscode.workspace.onDidChangeTextDocument((event) => {
     trackFileChange(event.document);
   });
