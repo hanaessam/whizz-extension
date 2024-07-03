@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   extensionContext = context;
 
-  const sidebarProvider = new SidebarProvider(context.extensionUri, context);
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("whizz-sidebar", sidebarProvider)
   );
@@ -97,7 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
     .keys()
     .forEach((key) => context.workspaceState.update(key, undefined));
 
-    addAllFiles(context);
+    // addAllFiles(context);
   }
 
   setInterval(async () => {

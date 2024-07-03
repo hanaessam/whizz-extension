@@ -16,12 +16,8 @@ import { createFileWithCode } from "../vscode-gateway/create-file";
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
-  _context: vscode.ExtensionContext;
-
-  constructor(private readonly _extensionUri: vscode.Uri, 
-    context: vscode.ExtensionContext) {
-    this._context = context;
-  }
+  
+  constructor(private readonly _extensionUri: vscode.Uri) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
@@ -84,15 +80,15 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         }
 
-        case "create-file-arch": {
-          vscode.window.showInformationMessage("Creating file architecture");
-          getProjectFileArch(this._context).then(() => {
-            vscode.window.showInformationMessage("File architecture creation complete.");
-          }).catch((error) => {
-            vscode.window.showErrorMessage("Failed to create file architecture: " + error.message);
-          });
-          break;
-        }
+        // case "create-file-arch": {
+        //   vscode.window.showInformationMessage("Creating file architecture");
+        //   getProjectFileArch(this._context).then(() => {
+        //     vscode.window.showInformationMessage("File architecture creation complete.");
+        //   }).catch((error) => {
+        //     vscode.window.showErrorMessage("Failed to create file architecture: " + error.message);
+        //   });
+        //   break;
+        // }
 
         case "generate-unit-test": {
           vscode.window.showInformationMessage("Generating unit test");
@@ -100,26 +96,26 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         }
 
-        case "switch-code-lang": {
-          vscode.window.showInformationMessage("Switching code language");
-          createFileWithCode(this._context).then(() => {
-            vscode.window.showInformationMessage("File created successfully.");
-          }).catch((error) => {
-            vscode.window.showErrorMessage("Failed to create file: " + error.message);
-          }
-          );
-          break;
-        }
+        // case "switch-code-lang": {
+        //   vscode.window.showInformationMessage("Switching code language");
+        //   createFileWithCode(this._context).then(() => {
+        //     vscode.window.showInformationMessage("File created successfully.");
+        //   }).catch((error) => {
+        //     vscode.window.showErrorMessage("Failed to create file: " + error.message);
+        //   }
+        //   );
+        //   break;
+        // }
 
-        case "generate-code-documentation": {
-          vscode.window.showInformationMessage("Generating code documentation");
-          generateCodeDocumentation(this._context).then(() => {
-            vscode.window.showInformationMessage("Code documentation generated successfully.");
-          }).catch((error) => {
-            vscode.window.showErrorMessage("Failed to generate code documentation: " + error.message);
-          });
-          break;
-        }
+        // case "generate-code-documentation": {
+        //   vscode.window.showInformationMessage("Generating code documentation");
+        //   generateCodeDocumentation(this._context).then(() => {
+        //     vscode.window.showInformationMessage("Code documentation generated successfully.");
+        //   }).catch((error) => {
+        //     vscode.window.showErrorMessage("Failed to generate code documentation: " + error.message);
+        //   });
+        //   break;
+        // }
 
         case "onInfo": {
           if (!data.value) {
