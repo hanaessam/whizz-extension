@@ -28,21 +28,18 @@ import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
-
   extensionContext = context;
 
-  extensionContext = context;
-
-  const sidebarProvider = new SidebarProvider(context.extensionUri, context);
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("whizz-sidebar", sidebarProvider)
   );
   console.log('Congratulations, your extension "whizz" is now active!');
 
-  let disposable = vscode.commands.registerCommand("whizz.helloWorld",async () => {
+  let disposable = vscode.commands.registerCommand("whizz.helloWorld", async () => {
     vscode.window.showInformationMessage("Hello World from whizz!");
-    
-   
+
+
   });
 
   context.subscriptions.push(
@@ -83,19 +80,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 
-  // setupFileDeletionWatcher(context);
-
-  // context.workspaceState
-  //   .keys()
-  //   .forEach((key) => context.workspaceState.update(key, undefined));
-
-  // addAllFiles(context);
-  
-  if(vscode.workspace.workspaceFolders){
+  if (vscode.workspace.workspaceFolders) {
 
     context.workspaceState
-    .keys()
-    .forEach((key) => context.workspaceState.update(key, undefined));
+      .keys()
+      .forEach((key) => context.workspaceState.update(key, undefined));
 
     addAllFiles(context);
   }
@@ -121,4 +110,4 @@ export function getExtensionContext(): vscode.ExtensionContext {
   return extensionContext;
 }
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

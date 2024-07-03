@@ -21,7 +21,7 @@ function getFileSummary(context: vscode.ExtensionContext, key: string): any {
 }
 
 // Function to retrieve all file summaries from workspaceState
-function getAllFileSummaries(context: vscode.ExtensionContext): { file: string; content: string }[] {
+function  getAllFileSummaries(context: vscode.ExtensionContext): { file: string; content: string }[] {
     const allKeys = context.workspaceState.keys();
     const fileSummaries: { file: string; content: string }[] = [];
 

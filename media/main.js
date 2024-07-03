@@ -23,14 +23,8 @@
   generateCodeDocument.addEventListener("click", generateCodeDocumentClicked);
   generateUnitTest.addEventListener("click", generateUnitTestClicked);
   createFileArch.addEventListener("click", createFileArchClicked);
-  switchCodeLanguage.addEventListener("click", switchCodeLanguageClicked );
+  switchCodeLanguage.addEventListener("click", switchCodeLanguageClicked);
 
-  switchCodeLanguageClicked = () => {
-    vscode.postMessage({
-      type: "switch-code-lang",
-      value: "switch-code-lang clicked",
-    });
-  };
 
   sendButton.addEventListener("click", () => {
     sendChatInput();
@@ -113,6 +107,13 @@
   function getGithubUserInfo(message) {
     githubUserInfo.innerHTML = `Github User Info: <br/>Username - ${message.user.username} <br/>Display Name - ${message.user.name}`;
   }
+  function switchCodeLanguageClicked() {
+    vscode.postMessage({
+      type: "switch-code-lang",
+      value: "switch-code-lang clicked",
+    });
+  };
+
 
   window.addEventListener("message", async (event) => {
     const message = event.data;

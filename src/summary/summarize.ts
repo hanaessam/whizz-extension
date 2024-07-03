@@ -14,7 +14,7 @@ interface Summary {
 }
 const MAX_FILES_PER_REQUEST = 1;
 
-export async function summarize(context: vscode.ExtensionContext) {
+export async function summarize(context: vscode.ExtensionContext): Promise<void> {
     try {
         let changedFiles = await processChangedFiles(); // Wait for processChangedFiles to complete
         

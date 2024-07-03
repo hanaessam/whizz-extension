@@ -81,18 +81,34 @@ export async function sendCodeToExplain(selectedCode: string) {
       codesnippet: selectedCode,
       summary: summariesAsString,
     });
-    console.log(response.data.answer);
+
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
     );
-    console.log(response.data.answer);
-    
+
+
     return response.data.answer; // This will be the output you can use in your webview
   } catch (error) {
     console.error("Error sending code snippet:", error);
     vscode.window.showErrorMessage("Error sending code snippet to server");
   }
 }
+
+export async function sendCodeToGenerateUnitTest(selectedCode: string) {
+  try {
+    const response = await axios.post(`${baseUri}/vscode/unit_tests`, {
+      code_snippet: selectedCode
+    });
+    vscode.window.showInformationMessage(
+      "Code snippet sent to server successfully"
+    );
+    return response.data; // This will be the output you can use in your webview
+  } catch (error) {
+    console.error("Error sending code snippet:", error);
+    vscode.window.showErrorMessage("Error sending code snippet to server");
+  }
+}
+
 
 export async function sendGeneralPrompt(
   codesnippet: string | null,
@@ -115,6 +131,8 @@ export async function sendGeneralPrompt(
     vscode.window.showErrorMessage("Error sending prompt to server");
   }
 }
+
+
 
 function isMediaFile(filePath: string): boolean {
   const mediaExtensions = [
