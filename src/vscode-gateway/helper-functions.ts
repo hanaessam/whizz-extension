@@ -7,6 +7,7 @@ import * as fsp from "fs/promises";
 import path from "path";
 import { getAllFileSummaries } from "../summary/caching";
 import { getExtensionContext } from "../extension";
+import { getUserId } from "./user";
 
 export function getSelectedCode(): string | null {
   const editor = vscode.window.activeTextEditor;
@@ -22,6 +23,7 @@ export async function sendSelectedCodeToServer(selectedCode: string) {
   try {
     const response = await axios.post(`${baseUri}/vscode/highlight`, {
       highlightedCode: selectedCode,
+      userId : getUserId()
     });
     vscode.window.showInformationMessage(
       "Selected code sent to server successfully"
@@ -61,6 +63,7 @@ export async function sendCodeToFix(selectedCode: string) {
     const response = await axios.post(`${baseUri}/openai/prompt`, {
       type: "fix",
       codesnippet: selectedCode,
+      userId : getUserId()
     });
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
@@ -80,19 +83,37 @@ export async function sendCodeToExplain(selectedCode: string) {
       type: "explain",
       codesnippet: selectedCode,
       summary: summariesAsString,
+      userId : getUserId()
     });
-    console.log(response.data.answer);
+
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
     );
-    console.log(response.data.answer);
-    
+
+
     return response.data.answer; // This will be the output you can use in your webview
   } catch (error) {
     console.error("Error sending code snippet:", error);
     vscode.window.showErrorMessage("Error sending code snippet to server");
   }
 }
+
+export async function sendCodeToGenerateUnitTest(selectedCode: string) {
+  try {
+    const response = await axios.post(`${baseUri}/vscode/unit_tests`, {
+      code_snippet: selectedCode,
+      userId : getUserId()
+    });
+    vscode.window.showInformationMessage(
+      "Code snippet sent to server successfully"
+    );
+    return response.data; // This will be the output you can use in your webview
+  } catch (error) {
+    console.error("Error sending code snippet:", error);
+    vscode.window.showErrorMessage("Error sending code snippet to server");
+  }
+}
+
 
 export async function sendGeneralPrompt(
   codesnippet: string | null,
@@ -106,6 +127,7 @@ export async function sendGeneralPrompt(
       codesnippet: codesnippet,
       prompt: query,
       summary: summariesAsString,
+      userId : getUserId()
     });
     console.log(response.data);
     vscode.window.showInformationMessage("Prompt sent to server successfully");
@@ -115,6 +137,8 @@ export async function sendGeneralPrompt(
     vscode.window.showErrorMessage("Error sending prompt to server");
   }
 }
+
+
 
 function isMediaFile(filePath: string): boolean {
   const mediaExtensions = [
@@ -128,6 +152,8 @@ function isMediaFile(filePath: string): boolean {
     ".pdf",
     "jff",
     ".txt",
+    ".rar",
+    ".zip"
   ];
   const ext = path.extname(filePath).toLowerCase();
   return mediaExtensions.includes(ext);
@@ -140,7 +166,6 @@ export function trackFileChange(document: vscode.TextDocument) {
   const filePath = vscode.workspace.asRelativePath(document.uri);
   if (!isMediaFile(filePath)) {
     changedFiles.add(filePath);
-    vscode.window.showInformationMessage("ADDED: ", filePath);
   }
 }
 
@@ -165,7 +190,7 @@ export async function addAllFiles(
         files.forEach((file) => {
           const filePath = vscode.workspace.asRelativePath(file);
           if (!isMediaFile(filePath)) {
-            vscode.window.showInformationMessage("ADDED: ", filePath);
+            // vscode.window.showInformationMessage("ADDED: ", filePath);
             changedFiles.add(filePath);
           }
         });
@@ -175,18 +200,22 @@ export async function addAllFiles(
 
       // Write file paths to files.txt
       const workspacePath = workspaceFolders[0].uri.fsPath;
-      const filesFilePath = path.join(workspacePath, "files.txt");
+      const summaryDir = path.join(workspacePath, 'whizz');
+      const filesFilePath = path.join(summaryDir, "files.txt");
       const fileStream = fs.createWriteStream(filesFilePath);
-
+      // Create the directory if it doesn't exist
+      if (!fs.existsSync(summaryDir)) {
+        fs.mkdirSync(summaryDir, { recursive: true });
+    }
       changedFiles.forEach((filePath) => {
         fileStream.write(filePath + "\n");
       });
 
       fileStream.end();
 
-      vscode.window.showInformationMessage(
-        `File paths written to ${filesFilePath}`
-      );
+      // vscode.window.showInformationMessage(
+      //   `File paths written to ${filesFilePath}`
+      // );
     }
   } catch (error) {
     console.error("Error adding all workspace files to set:", error);
@@ -231,7 +260,7 @@ export async function processChangedFiles() {
             content: content,
           };
         } catch (error) {
-          vscode.window.showErrorMessage(`Couldn't read ${absolutePath}`);
+          // vscode.window.showErrorMessage(`Couldn't read ${absolutePath}`);
           console.error(`Error reading file ${filePath}:`, error);
           return null;
         }
@@ -242,9 +271,9 @@ export async function processChangedFiles() {
     const validFilesData = filesData.filter((file) => file !== null);
 
     // Show the information message with changed files data (for debugging purposes)
-    vscode.window.showInformationMessage(
-      `Changed files: ${JSON.stringify(validFilesData)}`
-    );
+    // vscode.window.showInformationMessage(
+    //   `Changed files: ${JSON.stringify(validFilesData)}`
+    // );
 
     // Clear the changed files set
     changedFiles.clear();
@@ -266,6 +295,18 @@ export function setupFileDeletionWatcher(context: vscode.ExtensionContext) {
   context.subscriptions.push(watcher);
 }
 
+export function setupFileAdditionWatcher(context: vscode.ExtensionContext) {
+  // Create a FileSystemWatcher to monitor all files in the workspace
+  const watcher = vscode.workspace.createFileSystemWatcher("**/*");
+
+  // Handle file additions
+  watcher.onDidCreate((uri) => handleFileAddition(uri, context));
+
+  // Add the watcher to the subscriptions to ensure it is cleaned up
+  context.subscriptions.push(watcher);
+}
+
+
 // Function to handle file deletions
 function handleFileDeletion(uri: vscode.Uri, context: vscode.ExtensionContext) {
   const filePath = vscode.workspace.asRelativePath(uri);
@@ -277,4 +318,14 @@ function handleFileDeletion(uri: vscode.Uri, context: vscode.ExtensionContext) {
   vscode.window.showInformationMessage(
     `File ${filePath} has been deleted and its state has been removed.`
   );
+}
+
+function handleFileAddition(uri: vscode.Uri, context: vscode.ExtensionContext) {
+  const filePath = vscode.workspace.asRelativePath(uri);
+  if (!isMediaFile(filePath)) {
+      // Read the document content and call trackFileChange
+      vscode.workspace.openTextDocument(uri).then(document => {
+          trackFileChange(document);
+      });
+  }
 }

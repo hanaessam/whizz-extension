@@ -7,20 +7,21 @@ import {
   sendCodeToExplain,
   sendGeneralPrompt,
   sendSelectedCodeToServer,
+  sendCodeToGenerateUnitTest
 } from "../vscode-gateway/helper-functions";
 import { fixSelectedCode } from "../vscode-gateway/fix-code";
 import { getProjectFileArch } from "../vscode-gateway/file-architecture";
 import { generateCodeDocumentation } from "../vscode-gateway/generate-code-doc";
 import { createFileWithCode } from "../vscode-gateway/create-file";
+import { getExtensionContext } from "../extension";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
-  _context: vscode.ExtensionContext;
 
-  constructor(private readonly _extensionUri: vscode.Uri, 
-    context: vscode.ExtensionContext) {
-    this._context = context;
+
+  constructor(private readonly _extensionUri: vscode.Uri) {
+
   }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -40,11 +41,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           let selectedCode = getSelectedCode();
           if (selectedCode) {
             let response = await fixSelectedCode(selectedCode);
-            vscode.window.showInformationMessage(response);
+
             webviewView.webview.postMessage({
               type: "fix-code",
               value: response,
             });
+            vscode.window.showInformationMessage(response);
           } else {
             vscode.window.showErrorMessage("No code is selected");
           }
@@ -59,6 +61,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               type: "explain-code",
               value: response,
             });
+            vscode.window.showInformationMessage(response);
           } else {
             vscode.window.showErrorMessage("No code is selected");
           }
@@ -78,6 +81,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               type: "send-query",
               value: response,
             });
+            vscode.window.showInformationMessage(response);
           } else {
             vscode.window.showErrorMessage("No query to send");
           }
@@ -86,7 +90,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         case "create-file-arch": {
           vscode.window.showInformationMessage("Creating file architecture");
-          getProjectFileArch(this._context).then(() => {
+          let context = getExtensionContext();
+          getProjectFileArch(context).then(() => {
             vscode.window.showInformationMessage("File architecture creation complete.");
           }).catch((error) => {
             vscode.window.showErrorMessage("Failed to create file architecture: " + error.message);
@@ -96,13 +101,24 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         case "generate-unit-test": {
           vscode.window.showInformationMessage("Generating unit test");
-          // getProjectFileArch(this._context!)
+          let selectedCode = getSelectedCode();
+          if (selectedCode) {
+            let response = await sendCodeToGenerateUnitTest(selectedCode);
+            webviewView.webview.postMessage({
+              type: "generate-unit-test",
+              value: response,
+            });
+            vscode.window.showInformationMessage(response);
+          } else {
+            vscode.window.showErrorMessage("No code is selected");
+          }
           break;
         }
 
         case "switch-code-lang": {
           vscode.window.showInformationMessage("Switching code language");
-          createFileWithCode(this._context).then(() => {
+          let context = getExtensionContext();
+          createFileWithCode(context).then(() => {
             vscode.window.showInformationMessage("File created successfully.");
           }).catch((error) => {
             vscode.window.showErrorMessage("Failed to create file: " + error.message);
@@ -113,7 +129,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         case "generate-code-documentation": {
           vscode.window.showInformationMessage("Generating code documentation");
-          generateCodeDocumentation(this._context).then(() => {
+          let context = getExtensionContext();
+          generateCodeDocumentation(context).then(() => {
             vscode.window.showInformationMessage("Code documentation generated successfully.");
           }).catch((error) => {
             vscode.window.showErrorMessage("Failed to generate code documentation: " + error.message);
@@ -142,6 +159,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             type: "github-user-info",
             value: userInfo,
           });
+          break;
+        }
+
+        case "open-key-management": {
+          vscode.commands.executeCommand('whizz.showKeyManagement');
           break;
         }
       }
@@ -178,21 +200,37 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+      <style>
+        .key-icon {
+          position: absolute;
+          top: 10px;
+          right: 5px;
+          cursor: pointer;
+          border: 1px solid #ccc;
+          padding: 5px;
+          border-radius: 5px;
+        }
+        .whizz-body {
+          position: relative;
+          padding: 5px;
+        }
+      </style>
 			</head>
       <body>
 
         <div class="whizz-body">
-
+        
         <div class="github-auth">
          
         </div>
 
          <h1>Welcome to Whizz!</h1>
+         <i id="key-button" class="fa-solid fa-key key-icon"></i>
           <p> Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
             With Whizz, expect quick fixes, code explaination, and enhanced productivity right within your IDE. 
           </p>
-         
+
+          
               
               <h2 class="head-h2">Features</h2>
               
@@ -212,7 +250,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                   <input type="text" placeholder="Ask me anything!" class="chat-input"/>
                   <div class="send-icon"><a class="send-btn fa-solid fa-paper-plane"></a></div>
               </div>
-
         </div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

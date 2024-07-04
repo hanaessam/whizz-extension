@@ -1,13 +1,18 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 import { baseUri } from '../constants';
+import { getAllFileSummaries } from '../summary/caching';
+import { summarize } from '../summary/summarize';
+import { getUserId } from './user';
 
 export async function generateCodeDocumentation(context: vscode.ExtensionContext) {
     try {
+        await summarize(context);
+        const projectSummary =  getAllFileSummaries(context);
         // Use file picker for project path
         const folderUris = await vscode.window.showOpenDialog({
-            canSelectFiles: false, // Cannot select files
-            canSelectFolders: true, // Can select folders
+            canSelectFiles: true, 
+            canSelectFolders: true, 
             canSelectMany: false, // Can only select one folder
             openLabel: 'Select Project Folder'
         });
@@ -43,7 +48,9 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
             const response = await axios.post(`${baseUri}/vscode/generate-documentation`, {
                 projectPath: projectPath,
                 fields: fields,
-                format: format
+                format: format,
+                projectSummary: projectSummary,
+                userId : getUserId()
             });
 
             const message = response.data.message;
@@ -57,3 +64,4 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
         vscode.window.showErrorMessage('Error in generating documentation: ' + error.message);
     }
 }
+

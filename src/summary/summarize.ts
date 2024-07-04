@@ -5,7 +5,7 @@ import { processChangedFiles } from '../vscode-gateway/helper-functions';
 import { baseUri } from '../constants';
 import * as fs from 'fs';
 import { storeFileSummary, getFileSummary, getFileSummaryKey, getAllFileSummaries } from './caching';
-
+import { getUserId } from '../vscode-gateway/user';
 // Interface for the summary object
 interface Summary {
     name: string;
@@ -14,12 +14,12 @@ interface Summary {
 }
 const MAX_FILES_PER_REQUEST = 1;
 
-export async function summarize(context: vscode.ExtensionContext) {
+export async function summarize(context: vscode.ExtensionContext): Promise<void> {
     try {
         let changedFiles = await processChangedFiles(); // Wait for processChangedFiles to complete
         
         if (changedFiles && changedFiles.length > 0) {
-            vscode.window.showInformationMessage('Sending files to backend for summarization.');
+            // vscode.window.showInformationMessage('Sending files to backend for summarization.');
 
             const numBatches = Math.ceil(changedFiles.length / MAX_FILES_PER_REQUEST);
 
@@ -30,9 +30,16 @@ export async function summarize(context: vscode.ExtensionContext) {
                     // vscode.window.showInformationMessage(`Sending batch ${i + 1} to backend.`);
 
                     try {
-                        const response = await axios.post(`${baseUri}/openai/summarize`, batch);
+                        const userId = getUserId(); // Replace with the actual userId
+                    
+                        const requestBody = {
+                            filesData: batch, // include the batch array under filesData
+                            userId: userId // include the userId
+                        };
+                    
+                        const response = await axios.post(`${baseUri}/openai/summarize`, requestBody);
                         // vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
-
+                    
                         await updateSummaries(context, response.data);
                     } catch (error) {
                         console.error(`Error processing batch ${i + 1}:`, error);
@@ -42,7 +49,7 @@ export async function summarize(context: vscode.ExtensionContext) {
                 }
             }
 
-            vscode.window.showInformationMessage('Summarization for all files completed.');
+            // vscode.window.showInformationMessage('Summarization for all files completed.');
 
         } else {
             vscode.window.showInformationMessage('No files to summarize.');
@@ -61,19 +68,19 @@ async function updateSummaries(context: vscode.ExtensionContext, updatedSummarie
             // Store or update the summary for each file
             await storeFileSummary(context, filePath, name, content);
         }
-        vscode.window.showInformationMessage('Summaries updated successfully.');
+        // vscode.window.showInformationMessage('Summaries updated successfully.');
 
         
     } catch (error) {
         console.error('Error updating summaries:', error);
-        vscode.window.showErrorMessage('Failed to update summaries.');
+        // vscode.window.showErrorMessage('Failed to update summaries.');
     }
 }
 
-export function writeSummaryFile(context: vscode.ExtensionContext){
+export function writeSummaryFile(context: vscode.ExtensionContext) {
     // Retrieve all file summaries
     const summaries = getAllFileSummaries(context);
-        
+    
     // Convert summaries to a string for writing to the file
     const summariesString = JSON.stringify(summaries, null, 2);
 
@@ -83,7 +90,13 @@ export function writeSummaryFile(context: vscode.ExtensionContext){
         const workspaceFolder = workspaceFolders[0].uri.fsPath;
 
         // Define the path for the summary file
-        const summaryFilePath = path.join(workspaceFolder, 'summary.txt');
+        const summaryDir = path.join(workspaceFolder, 'whizz');
+        const summaryFilePath = path.join(summaryDir, 'summary.txt');
+
+        // Create the directory if it doesn't exist
+        if (!fs.existsSync(summaryDir)) {
+            fs.mkdirSync(summaryDir, { recursive: true });
+        }
 
         // Write summaries to the file
         fs.writeFileSync(summaryFilePath, summariesString, 'utf8');
@@ -91,5 +104,4 @@ export function writeSummaryFile(context: vscode.ExtensionContext){
     } else {
         vscode.window.showErrorMessage('No workspace folder found.');
     }
-
 }

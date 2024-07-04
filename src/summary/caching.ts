@@ -1,6 +1,7 @@
 import path from 'path';
 import * as vscode from 'vscode';
-
+import { addAllFiles } from '../vscode-gateway/helper-functions';
+import { summarize } from './summarize';
 // Function to generate the key for storing file summary
 function getFileSummaryKey(folderPath: string): string {
     const key = `${folderPath}_summary`;
@@ -21,7 +22,7 @@ function getFileSummary(context: vscode.ExtensionContext, key: string): any {
 }
 
 // Function to retrieve all file summaries from workspaceState
-function getAllFileSummaries(context: vscode.ExtensionContext): { file: string; content: string }[] {
+function  getAllFileSummaries(context: vscode.ExtensionContext): { file: string; content: string }[] {
     const allKeys = context.workspaceState.keys();
     const fileSummaries: { file: string; content: string }[] = [];
 
@@ -36,6 +37,37 @@ function getAllFileSummaries(context: vscode.ExtensionContext): { file: string; 
     return fileSummaries;
 }
 
+function addWorkSpace (context: vscode.ExtensionContext){
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+
+    if (workspaceFolders) {
+        const workspacePath = workspaceFolders[0].uri.fsPath;
+        const workspaceKey = `workspace_${workspacePath}`;
+
+        const hasBeenOpenedBefore = context.globalState.get(workspaceKey);
+
+        if (!hasBeenOpenedBefore) {
+            context.globalState.update(workspaceKey, true);
+        }
+    } else {
+        vscode.window.showInformationMessage('No workspace is opened.');
+    }
+}
+
+
+  
+function handleWorkspaceChange(context: vscode.ExtensionContext){
+context.workspaceState
+    .keys()
+    .forEach((key) => context.workspaceState.update(key, undefined));
+    addAllFiles(context);
+    summarize(context);
+}
 // Exporting functions for use in other modules
-export { storeFileSummary, getFileSummary, getAllFileSummaries, getFileSummaryKey };
+export { storeFileSummary, 
+    getFileSummary, 
+    getAllFileSummaries, 
+    getFileSummaryKey, 
+    handleWorkspaceChange 
+};
 

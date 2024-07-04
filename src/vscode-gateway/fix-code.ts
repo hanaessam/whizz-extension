@@ -3,12 +3,13 @@ import axios from "axios";
 import { baseUri } from "../constants";
 import { getSelectedCode } from "./helper-functions";
 import { replaceSelectedCode } from "./replace-selected-code";
-
+import { getUserId } from "./user";
 export async function fixSelectedCode(code: string) {
   try {
     const response = await axios.post(`${baseUri}/openai/prompt`, {
       type: "fix",
       codesnippet: code,
+      userId : getUserId()
     });
     const fixedcode = response.data.code;
     vscode.window.showInformationMessage(fixedcode);

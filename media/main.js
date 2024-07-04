@@ -18,23 +18,26 @@
   const loginWithGithubButton = document.getElementById("github-login-button");
   const githubUserInfo = document.getElementById("github-user-info");
 
+  const keyButton = document.getElementById("key-button");
+
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
   generateCodeDocument.addEventListener("click", generateCodeDocumentClicked);
   generateUnitTest.addEventListener("click", generateUnitTestClicked);
   createFileArch.addEventListener("click", createFileArchClicked);
-  switchCodeLanguage.addEventListener("click", switchCodeLanguageClicked );
+  switchCodeLanguage.addEventListener("click", switchCodeLanguageClicked);
 
-  switchCodeLanguageClicked = () => {
-    vscode.postMessage({
-      type: "switch-code-lang",
-      value: "switch-code-lang clicked",
-    });
-  };
 
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
+  });
+
+
+  keyButton.addEventListener("click", () => {
+    vscode.postMessage({
+      type: "open-key-management",
+    });
   });
 
   loginWithGithubButton.addEventListener("click", loginWithGithub);
@@ -113,6 +116,13 @@
   function getGithubUserInfo(message) {
     githubUserInfo.innerHTML = `Github User Info: <br/>Username - ${message.user.username} <br/>Display Name - ${message.user.name}`;
   }
+  function switchCodeLanguageClicked() {
+    vscode.postMessage({
+      type: "switch-code-lang",
+      value: "switch-code-lang clicked",
+    });
+  };
+
 
   window.addEventListener("message", async (event) => {
     const message = event.data;
