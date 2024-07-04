@@ -3,6 +3,7 @@ import axios from 'axios';
 import { baseUri } from '../constants';
 import { getAllFileSummaries } from '../summary/caching';
 import { summarize } from '../summary/summarize';
+import { getUserId } from './user';
 
 export async function generateCodeDocumentation(context: vscode.ExtensionContext) {
     try {
@@ -48,7 +49,8 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
                 projectPath: projectPath,
                 fields: fields,
                 format: format,
-                projectSummary: projectSummary
+                projectSummary: projectSummary,
+                userId : getUserId()
             });
 
             const message = response.data.message;

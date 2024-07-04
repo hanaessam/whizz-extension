@@ -5,7 +5,7 @@ import { processChangedFiles } from '../vscode-gateway/helper-functions';
 import { baseUri } from '../constants';
 import * as fs from 'fs';
 import { storeFileSummary, getFileSummary, getFileSummaryKey, getAllFileSummaries } from './caching';
-
+import { getUserId } from '../vscode-gateway/user';
 // Interface for the summary object
 interface Summary {
     name: string;
@@ -30,9 +30,16 @@ export async function summarize(context: vscode.ExtensionContext): Promise<void>
                     // vscode.window.showInformationMessage(`Sending batch ${i + 1} to backend.`);
 
                     try {
-                        const response = await axios.post(`${baseUri}/openai/summarize`, batch);
+                        const userId = getUserId(); // Replace with the actual userId
+                    
+                        const requestBody = {
+                            filesData: batch, // include the batch array under filesData
+                            userId: userId // include the userId
+                        };
+                    
+                        const response = await axios.post(`${baseUri}/openai/summarize`, requestBody);
                         // vscode.window.showInformationMessage(`Received updated summaries for batch ${i + 1}: ${JSON.stringify(response.data)}`);
-
+                    
                         await updateSummaries(context, response.data);
                     } catch (error) {
                         console.error(`Error processing batch ${i + 1}:`, error);

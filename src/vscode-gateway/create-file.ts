@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import axios from "axios";
 import { baseUri } from "../constants";
+import { getUserId } from "./user";
 
 export async function createFileWithCode(context: vscode.ExtensionContext) {
   const editor = vscode.window.activeTextEditor;
@@ -30,6 +31,7 @@ export async function createFileWithCode(context: vscode.ExtensionContext) {
       fromLanguage: String(fromLanguage),
       toLanguage: String(toLanguage),
       codeSnippet: String(code),
+      userId : getUserId()
     });
 
     if (response.status !== 200 || !response.data) {
