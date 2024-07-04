@@ -22,7 +22,7 @@ import {
 import * as path from "path";
 import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
 import { handleWorkspaceChange } from "./summary/caching";
-
+import { KeyManagementProvider } from "./panels/KeyManagementProvider";
 
 
 // This method is called when your extension is activated
@@ -35,6 +35,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("whizz-sidebar", sidebarProvider)
   );
+  context.subscriptions.push(
+    vscode.commands.registerCommand('whizz.showKeyManagement', () => {
+      KeyManagementProvider.createOrShow(context);
+    })
+  );
+
   console.log('Congratulations, your extension "whizz" is now active!');
 
   let disposable = vscode.commands.registerCommand("whizz.helloWorld", async () => {

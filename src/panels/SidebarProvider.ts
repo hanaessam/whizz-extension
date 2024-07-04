@@ -161,6 +161,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           });
           break;
         }
+
+        case "open-key-management": {
+          vscode.commands.executeCommand('whizz.showKeyManagement');
+          break;
+        }
       }
     });
   }
@@ -195,21 +200,37 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+      <style>
+        .key-icon {
+          position: absolute;
+          top: 10px;
+          right: 5px;
+          cursor: pointer;
+          border: 1px solid #ccc;
+          padding: 5px;
+          border-radius: 5px;
+        }
+        .whizz-body {
+          position: relative;
+          padding: 5px;
+        }
+      </style>
 			</head>
       <body>
 
         <div class="whizz-body">
-
+        
         <div class="github-auth">
          
         </div>
 
          <h1>Welcome to Whizz!</h1>
+         <i id="key-button" class="fa-solid fa-key key-icon"></i>
           <p> Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
             With Whizz, expect quick fixes, code explaination, and enhanced productivity right within your IDE. 
           </p>
-         
+
+          
               
               <h2 class="head-h2">Features</h2>
               
@@ -229,7 +250,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                   <input type="text" placeholder="Ask me anything!" class="chat-input"/>
                   <div class="send-icon"><a class="send-btn fa-solid fa-paper-plane"></a></div>
               </div>
-
         </div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

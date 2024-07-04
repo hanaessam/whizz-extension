@@ -18,6 +18,8 @@
   const loginWithGithubButton = document.getElementById("github-login-button");
   const githubUserInfo = document.getElementById("github-user-info");
 
+  const keyButton = document.getElementById("key-button");
+
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
   generateCodeDocument.addEventListener("click", generateCodeDocumentClicked);
@@ -29,6 +31,13 @@
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
+  });
+
+
+  keyButton.addEventListener("click", () => {
+    vscode.postMessage({
+      type: "open-key-management",
+    });
   });
 
   loginWithGithubButton.addEventListener("click", loginWithGithub);
