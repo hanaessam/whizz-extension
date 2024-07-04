@@ -1,11 +1,8 @@
 import * as vscode from "vscode";
 import axios from "axios";
-import { baseUri } from "../constants";
+import { baseUri, TOKEN_KEY, LOGIN_TIME_KEY, USER_ID } from "../constants";
 import { TokenManager } from "./TokenManager";
 
-const TOKEN_KEY = "userToken";
-const LOGIN_TIME_KEY = "loginTime";
-const USER_ID = "userID";
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 function setToken(context: vscode.ExtensionContext, token: string) {
