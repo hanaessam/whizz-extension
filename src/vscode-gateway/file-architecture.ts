@@ -4,6 +4,7 @@ import { baseUri } from '../constants';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { getUserId } from './user';
 
 export async function getProjectFileArch(context: vscode.ExtensionContext) {
     const projectName = await vscode.window.showInputBox({ placeHolder: 'Enter project name' });
@@ -15,7 +16,8 @@ export async function getProjectFileArch(context: vscode.ExtensionContext) {
             const response = await axios.post(`${baseUri}/vscode/generate-project`, {
                 projectName: projectName,
                 projectDescription: projectDescription,
-                projectFramework: projectFramework
+                projectFramework: projectFramework,
+                userId : getUserId()
             });
             const projectStructure = response.data.structure;
             const postCreationCommands = response.data.commands;

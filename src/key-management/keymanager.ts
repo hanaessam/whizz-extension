@@ -5,7 +5,7 @@ export class KeyManager {
   static async getKey(user_id : string | undefined) {
     if(!user_id) throw new Error("User id is required");
     const key = await axios.get(`${baseUri}/key/${user_id}`);
-    return key.data;
+    return key.data.key;
   }
   static async addKey(user_id : string | undefined, key : string) {
     if(!user_id) throw new Error("User id is required");

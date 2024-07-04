@@ -7,6 +7,7 @@ import * as fsp from "fs/promises";
 import path from "path";
 import { getAllFileSummaries } from "../summary/caching";
 import { getExtensionContext } from "../extension";
+import { getUserId } from "./user";
 
 export function getSelectedCode(): string | null {
   const editor = vscode.window.activeTextEditor;
@@ -22,6 +23,7 @@ export async function sendSelectedCodeToServer(selectedCode: string) {
   try {
     const response = await axios.post(`${baseUri}/vscode/highlight`, {
       highlightedCode: selectedCode,
+      userId : getUserId()
     });
     vscode.window.showInformationMessage(
       "Selected code sent to server successfully"
@@ -61,6 +63,7 @@ export async function sendCodeToFix(selectedCode: string) {
     const response = await axios.post(`${baseUri}/openai/prompt`, {
       type: "fix",
       codesnippet: selectedCode,
+      userId : getUserId()
     });
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
@@ -80,6 +83,7 @@ export async function sendCodeToExplain(selectedCode: string) {
       type: "explain",
       codesnippet: selectedCode,
       summary: summariesAsString,
+      userId : getUserId()
     });
 
     vscode.window.showInformationMessage(
@@ -97,7 +101,8 @@ export async function sendCodeToExplain(selectedCode: string) {
 export async function sendCodeToGenerateUnitTest(selectedCode: string) {
   try {
     const response = await axios.post(`${baseUri}/vscode/unit_tests`, {
-      code_snippet: selectedCode
+      code_snippet: selectedCode,
+      userId : getUserId()
     });
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
@@ -122,6 +127,7 @@ export async function sendGeneralPrompt(
       codesnippet: codesnippet,
       prompt: query,
       summary: summariesAsString,
+      userId : getUserId()
     });
     console.log(response.data);
     vscode.window.showInformationMessage("Prompt sent to server successfully");
