@@ -6,8 +6,9 @@ import { authenticate } from "./authentication/authenticate";
 import { TokenManager } from "./authentication/TokenManager";
 import {
   trackFileChange,
-  addAllFiles,
   setupFileDeletionWatcher,
+  setupFileAdditionWatcher,
+  addAllFiles
 } from "./vscode-gateway/helper-functions";
 import { summarize, writeSummaryFile } from "./summary/summarize";
 import { getProjectFileArch } from "./vscode-gateway/file-architecture";
@@ -20,7 +21,7 @@ import {
 } from "./authentication/emailauthentication";
 import * as path from "path";
 import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
-
+import { handleWorkspaceChange } from "./summary/caching";
 
 
 
@@ -28,9 +29,6 @@ import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
-
-  extensionContext = context;
-
   extensionContext = context;
 
   const sidebarProvider = new SidebarProvider(context.extensionUri);
@@ -39,10 +37,10 @@ export function activate(context: vscode.ExtensionContext) {
   );
   console.log('Congratulations, your extension "whizz" is now active!');
 
-  let disposable = vscode.commands.registerCommand("whizz.helloWorld",async () => {
+  let disposable = vscode.commands.registerCommand("whizz.helloWorld", async () => {
     vscode.window.showInformationMessage("Hello World from whizz!");
-    
-   
+
+
   });
 
   context.subscriptions.push(
@@ -83,27 +81,24 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 
-  // setupFileDeletionWatcher(context);
+  setupFileDeletionWatcher(context);
+  setupFileAdditionWatcher(context);
 
-  // context.workspaceState
-  //   .keys()
-  //   .forEach((key) => context.workspaceState.update(key, undefined));
+  const workspaceChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(event => {
+      handleWorkspaceChange(context);
+  });
+  context.subscriptions.push(workspaceChangeListener);
 
-  // addAllFiles(context);
-  
   if(vscode.workspace.workspaceFolders){
-
-    context.workspaceState
-    .keys()
-    .forEach((key) => context.workspaceState.update(key, undefined));
-
-    // addAllFiles(context);
+    addAllFiles(context);
   }
-
+  
   setInterval(async () => {
     summarize(context);
   }, 60000); // 60000 milliseconds = 1 minute
 
+  //REMOVE THIS AFTER TESTING
+  //check in database instead
   setInterval(async () => {
     await writeSummaryFile(context);
   }, 300000); // 300000 milliseconds = 5 minutes
@@ -112,13 +107,17 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeTextDocument((event) => {
     trackFileChange(event.document);
   });
+
 }
 
+
+// This method is called when your extension is deactivated
+export function deactivate() {}
+
+// to use extesion context
 export function getExtensionContext(): vscode.ExtensionContext {
   if (!extensionContext) {
-    throw new Error("Extension context is not initialized.");
+      throw new Error('Extension context is not initialized.');
   }
   return extensionContext;
 }
-// This method is called when your extension is deactivated
-export function deactivate() {}
