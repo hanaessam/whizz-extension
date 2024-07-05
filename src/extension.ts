@@ -16,13 +16,15 @@ import { createFileWithCode } from "./vscode-gateway/create-file";
 import {
   signupWithEmail,
   loginWithEmail,
-  isAuth
+  isAuth,
   logout,
 } from "./authentication/emailauthentication";
 import * as path from "path";
 import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
 import { handleWorkspaceChange } from "./summary/caching";
 import { KeyManagementProvider } from "./panels/KeyManagementProvider";
+import { AuthenticationProvider } from "./panels/AuthenticationProvider";
+// import { AuthenticationProvider } from "./panels/AuthenticationProvider";
 
 // Store the sidebarProvider globally
 let sidebarProvider: SidebarProvider;
@@ -39,6 +41,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.showKeyManagement", () => {
       KeyManagementProvider.createOrShow(context);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.authenticationManagement", () => {
+      AuthenticationProvider.createOrShow(context);
     })
   );
 
@@ -79,6 +87,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.loginWithEmail", async () => {
       await loginWithEmail(context);
+      sidebarProvider.updateWebviewContent(context);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.refresh", async () => {
       sidebarProvider.updateWebviewContent(context);
     })
   );
@@ -137,4 +151,10 @@ export function getExtensionContext(): vscode.ExtensionContext {
     throw new Error("Extension context is not initialized.");
   }
   return extensionContext;
+}
+export function getSideBar(): SidebarProvider {
+  if (!sidebarProvider) {
+    throw new Error("Sidebar sidebar is not initialized.");
+  }
+  return sidebarProvider;
 }

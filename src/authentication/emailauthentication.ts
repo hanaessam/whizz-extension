@@ -55,29 +55,67 @@ export async function signupWithEmail(context: vscode.ExtensionContext) {
     vscode.window.showErrorMessage("Please fill in all fields.");
   }
 }
-async function login(
+export async function login(
   context: vscode.ExtensionContext,
   email: string,
   password: string
 ) {
-  const url = `${baseUri}/login`;
-  try {
-    const response = await axios.post(url, {
-      email: email,
-      password: password,
-    });
+  if(email && password){
+    const url = `${baseUri}/login`;
+    try {
+      const response = await axios.post(url, {
+        email: email,
+        password: password,
+      });
 
-    const token = response.data.token;
-    const user_id = response.data.userId;
-    setToken(context, token);
-    setUserId(context, user_id);
-    vscode.window.showInformationMessage("Logged in successfully.");
+      const token = response.data.token;
+      const user_id = response.data.userId;
+      await setToken(context, token);
+      await setUserId(context, user_id);
+      vscode.window.showInformationMessage("Logged in successfully.");
+      vscode.window.showInformationMessage("Refreshing view");
+      if(isAuth(context)){
+        vscode.window.showInformationMessage("User is authenticated.");
+      }
+      else{
+        vscode.window.showInformationMessage("User is not authenticated.");
+      }
+      // Refresh sidebar
+      const sidebarProvider = new SidebarProvider(context.extensionUri);
+      await sidebarProvider.updateWebviewContent(context);
 
-    // Refresh sidebar
-    const sidebarProvider = new SidebarProvider(context.extensionUri);
-    sidebarProvider.updateWebviewContent(context);
-  } catch (error) {
-    vscode.window.showErrorMessage(`Failed to login: ${error}`);
+      vscode.window.showInformationMessage("Exiting Login Function.")
+    } catch (error) {
+      vscode.window.showErrorMessage(`Failed to login: ${error}`);
+    }
+  }
+  else{
+    vscode.window.showErrorMessage("Please fill in all fields.");
+  
+  }
+}
+
+export async function signup(
+  context: vscode.ExtensionContext,
+  email: string,
+  password: string,
+) {
+  if (email && password) {
+    const url = `${baseUri}/signup`;
+    try {
+      const response = await axios.post(url, {
+        email: email,
+        password: password,
+      });
+
+      const token = response.data.token;
+      setToken(context, token);
+      vscode.window.showInformationMessage("Signed up successfully.");
+    } catch (error) {
+      vscode.window.showErrorMessage(`Failed to signup: ${error}`);
+    }
+  } else {
+    vscode.window.showErrorMessage("Please fill in all fields.");
   }
 }
 
@@ -107,11 +145,6 @@ export function logout(context: vscode.ExtensionContext) {
   // Refresh sidebar
   const sidebarProvider = new SidebarProvider(context.extensionUri);
   sidebarProvider.updateWebviewContent(context);
-}
-
-export function isAuth(context: vscode.ExtensionContext): boolean {
-  const userId = context.globalState.get<string>(USER_ID);
-  return !!userId;
 }
 
 export function isAuth(context: vscode.ExtensionContext): boolean {
