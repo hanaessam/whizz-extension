@@ -10,7 +10,11 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:whizz.authenticate"
+    "onCommand:whizz.authenticate", 
+    "onCommand:whizz.signupWithEmail",
+    "onCommand:whizz.loginWithEmail",
+    "onCommand:whizz.logout",
+    "onView:whizz-sidebar"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -79,6 +83,12 @@
       {
         "command": "whizz.loginWithEmail",
         "title": "Login", 
+        "category": "Whizz"
+
+      }, 
+      {
+        "command": "whizz.logout",
+        "title": "Logout", 
         "category": "Whizz"
 
       }

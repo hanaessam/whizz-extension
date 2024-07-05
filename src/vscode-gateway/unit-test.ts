@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import axios from "axios";
 import { baseUri } from "../constants";
+import { getUserId } from "./user";
 
 export async function generateUnitTest(code: string) {
   const editor = vscode.window.activeTextEditor;
@@ -14,9 +15,10 @@ export async function generateUnitTest(code: string) {
   try {
     const response = await axios.post(`${baseUri}/vscode/unit_tests`, {
       codesnippet: code,
+      userId: getUserId(),
     });
     const unitTest = response.data.code;
-
+    vscode.window.showErrorMessage(unitTest);
     const languageExtensions: { [key: string]: string } = {
       javascript: "js",
       typescript: "ts",

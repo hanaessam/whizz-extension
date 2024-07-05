@@ -19,6 +19,7 @@
   const githubUserInfo = document.getElementById("github-user-info");
 
   const keyButton = document.getElementById("key-button");
+  const signupButton = document.getElementById("signup-button");
 
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
@@ -27,7 +28,13 @@
   createFileArch.addEventListener("click", createFileArchClicked);
   switchCodeLanguage.addEventListener("click", switchCodeLanguageClicked);
 
-
+  signupButton.addEventListener("click", () => {
+    vscode.window.showInformationMessage("Signup button clicked");
+    vscode.postMessage({
+      type: "open-key-management",  
+    });
+  });
+  
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
@@ -40,7 +47,10 @@
     });
   });
 
+
+
   loginWithGithubButton.addEventListener("click", loginWithGithub);
+
 
   function appendMessageToChatbox(message) {
     const newMessageElement = document.createElement("p");
