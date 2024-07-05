@@ -1,27 +1,31 @@
-import * as vscode from 'vscode';
-import { getNonce } from '../getNonce';
-import { KeyManager
- } from '../key-management/keymanager';
-import { getUserId } from '../vscode-gateway/user'
-import { get } from 'axios';
+import * as vscode from "vscode";
+import { getNonce } from "../getNonce";
+import { KeyManager } from "../key-management/keymanager";
+import { getUserId } from "../vscode-gateway/user";
+import { get } from "axios";
 
 export class KeyManagementProvider implements vscode.WebviewPanelSerializer {
-  deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: unknown): Thenable<void> {
-    throw new Error('Method not implemented.');
+  deserializeWebviewPanel(
+    webviewPanel: vscode.WebviewPanel,
+    state: unknown
+  ): Thenable<void> {
+    throw new Error("Method not implemented.");
   }
 
-  private static readonly viewType = 'keyManagement';
+  private static readonly viewType = "keyManagement";
 
   private static savedOpenAIKey: string | null = null;
-  
+
   private static keyManager = new KeyManager();
 
-  public static createOrShow(context: vscode.ExtensionContext) {
-    const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+  public static async createOrShow(context: vscode.ExtensionContext) {
+    const column = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
 
     const panel = vscode.window.createWebviewPanel(
       KeyManagementProvider.viewType,
-      'OpenAI Key Management',
+      "OpenAI Key Management",
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -32,34 +36,54 @@ export class KeyManagementProvider implements vscode.WebviewPanelSerializer {
     panel.webview.html = KeyManagementProvider.getHtmlForWebview(panel.webview);
 
     panel.webview.onDidReceiveMessage(
-      (message) => {
+      async (message) => {
         switch (message.command) {
-          case 'addOpenAIKey':
+          case "addOpenAIKey":
             const newKey = message.key;
+            console.log("key: ", newKey);
             if (newKey.trim().length > 0) {
-                KeyManagementProvider.savedOpenAIKey = newKey;
-                KeyManager.addKey(getUserId(), newKey);
-                KeyManagementProvider.postMessage(panel.webview, { command: 'showMessage', text: 'OpenAI key added successfully.' });
+              KeyManagementProvider.savedOpenAIKey = newKey;
+              console.log("key: ", newKey);
+              await KeyManager.addKey(getUserId(), newKey);
+              await KeyManagementProvider.postMessage(panel.webview, {
+                command: "showMessage",
+                text: "OpenAI key added successfully.",
+              });
             } else {
-                KeyManagementProvider.postMessage(panel.webview, { command: 'showMessage', text: 'Invalid OpenAI key.' });
+              await KeyManagementProvider.postMessage(panel.webview, {
+                command: "showMessage",
+                text: "Invalid OpenAI key.",
+              });
             }
             break;
-          case 'removeOpenAIKey':
+          case "removeOpenAIKey":
             KeyManagementProvider.savedOpenAIKey = null;
             KeyManager.removeKey(getUserId());
-            KeyManagementProvider.postMessage(panel.webview, { command: 'showMessage', text: 'OpenAI key removed successfully.' });
+            KeyManagementProvider.postMessage(panel.webview, {
+              command: "showMessage",
+              text: "OpenAI key removed successfully.",
+            });
             break;
-          case 'displaySavedKey':
+          case "displaySavedKey":
             try {
-                const savedKey = KeyManager.getKey(getUserId());
-                if (savedKey) {
-                KeyManagementProvider.postMessage(panel.webview, { command: 'showMessage', text: `Saved OpenAI Key: ${savedKey}` });
-                } else {
-                KeyManagementProvider.postMessage(panel.webview, { command: 'showMessage', text: 'No OpenAI key saved.' });
-                }
+              const savedKey = KeyManager.getKey(getUserId());
+              if (savedKey) {
+                KeyManagementProvider.postMessage(panel.webview, {
+                  command: "showMessage",
+                  text: `Saved OpenAI Key: ${savedKey}`,
+                });
+              } else {
+                KeyManagementProvider.postMessage(panel.webview, {
+                  command: "showMessage",
+                  text: "No OpenAI key saved.",
+                });
+              }
             } catch (error) {
-                console.error('Error fetching saved key:', error);
-                KeyManagementProvider.postMessage(panel.webview, { command: 'showMessage', text: 'Error fetching saved OpenAI key.' });
+              console.error("Error fetching saved key:", error);
+              KeyManagementProvider.postMessage(panel.webview, {
+                command: "showMessage",
+                text: "Error fetching saved OpenAI key.",
+              });
             }
             break;
         }
@@ -235,9 +259,6 @@ export class KeyManagementProvider implements vscode.WebviewPanelSerializer {
       </html>
     `;
   }
-  
-  
-  
 
   private static postMessage(webview: vscode.Webview, message: any) {
     // Use 'any' type for webview since TypeScript is not recognizing 'postMessage' properly

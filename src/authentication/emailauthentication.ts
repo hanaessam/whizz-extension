@@ -10,7 +10,7 @@ function setToken(context: vscode.ExtensionContext, token: string) {
   context.globalState.update(LOGIN_TIME_KEY, Date.now());
 }
 
-function setUserId(context: vscode.ExtensionContext, id: number) {
+function setUserId(context: vscode.ExtensionContext, id: string) {
   context.globalState.update(USER_ID, id);
   context.globalState.update(LOGIN_TIME_KEY, Date.now());
 }
@@ -47,9 +47,7 @@ export async function signupWithEmail(context: vscode.ExtensionContext) {
 
       const token = response.data.token;
       setToken(context, token);
-      vscode.window.showInformationMessage(
-        "Signed up and logged in successfully."
-      );
+      vscode.window.showInformationMessage("Signed up successfully.");
     } catch (error) {
       vscode.window.showErrorMessage(`Failed to signup: ${error}`);
     }
@@ -71,7 +69,7 @@ async function login(
     });
 
     const token = response.data.token;
-    const user_id = response.data.token;
+    const user_id = response.data.userId;
     setToken(context, token);
     setUserId(context, user_id);
 
