@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import axios from "axios";
 import { baseUri, TOKEN_KEY, LOGIN_TIME_KEY, USER_ID } from "../constants";
 import { TokenManager } from "./TokenManager";
-
+import { SidebarProvider } from "../panels/SidebarProvider";
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 function setToken(context: vscode.ExtensionContext, token: string) {
@@ -55,7 +55,6 @@ export async function signupWithEmail(context: vscode.ExtensionContext) {
     vscode.window.showErrorMessage("Please fill in all fields.");
   }
 }
-
 async function login(
   context: vscode.ExtensionContext,
   email: string,
@@ -72,8 +71,11 @@ async function login(
     const user_id = response.data.userId;
     setToken(context, token);
     setUserId(context, user_id);
-
     vscode.window.showInformationMessage("Logged in successfully.");
+
+    // Refresh sidebar
+    const sidebarProvider = new SidebarProvider(context.extensionUri);
+    sidebarProvider.updateWebviewContent(context);
   } catch (error) {
     vscode.window.showErrorMessage(`Failed to login: ${error}`);
   }
@@ -101,4 +103,13 @@ export function logout(context: vscode.ExtensionContext) {
   context.globalState.update(USER_ID, undefined);
 
   vscode.window.showInformationMessage("Logged out successfully.");
+
+  // Refresh sidebar
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
+  sidebarProvider.updateWebviewContent(context);
+}
+
+export function isAuth(context: vscode.ExtensionContext): boolean {
+  const userId = context.globalState.get<string>(USER_ID);
+  return !!userId;
 }

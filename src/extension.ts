@@ -1,5 +1,3 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { SidebarProvider } from "./panels/SidebarProvider";
 import { authenticate } from "./authentication/authenticate";
@@ -8,7 +6,7 @@ import {
   trackFileChange,
   setupFileDeletionWatcher,
   setupFileAdditionWatcher,
-  addAllFiles
+  addAllFiles,
 } from "./vscode-gateway/helper-functions";
 import { summarize, writeSummaryFile } from "./summary/summarize";
 import { getProjectFileArch } from "./vscode-gateway/file-architecture";
@@ -18,41 +16,43 @@ import { createFileWithCode } from "./vscode-gateway/create-file";
 import {
   signupWithEmail,
   loginWithEmail,
+  logout,
 } from "./authentication/emailauthentication";
 import * as path from "path";
 import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
 import { handleWorkspaceChange } from "./summary/caching";
 import { KeyManagementProvider } from "./panels/KeyManagementProvider";
 
+// Store the sidebarProvider globally
+let sidebarProvider: SidebarProvider;
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
   extensionContext = context;
 
-  const sidebarProvider = new SidebarProvider(context.extensionUri);
+  sidebarProvider = new SidebarProvider(context.extensionUri);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("whizz-sidebar", sidebarProvider)
   );
+
   context.subscriptions.push(
-    vscode.commands.registerCommand('whizz.showKeyManagement', () => {
+    vscode.commands.registerCommand("whizz.showKeyManagement", () => {
       KeyManagementProvider.createOrShow(context);
     })
   );
 
   console.log('Congratulations, your extension "whizz" is now active!');
 
-  let disposable = vscode.commands.registerCommand("whizz.helloWorld", async () => {
-    vscode.window.showInformationMessage("Hello World from whizz!");
-
-
-  });
+  let disposable = vscode.commands.registerCommand(
+    "whizz.helloWorld",
+    async () => {
+      vscode.window.showInformationMessage("Hello World from whizz!");
+    }
+  );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.authenticate", () => {
       authenticate();
-      // vscode.window.showInformationMessage(`Authenticating with GitHub: token : ${TokenManager.getToken()}`);
     })
   );
 
@@ -62,27 +62,40 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.createFileWithCode", async () => {
       createFileWithCode(context);
     })
   );
+
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.signupWithEmail", async () => {
-      signupWithEmail(context);
-    })
-  );
-  context.subscriptions.push(
-    vscode.commands.registerCommand("whizz.loginWithEmail", async () => {
-      loginWithEmail(context);
+      await signupWithEmail(context);
+      sidebarProvider.updateWebviewContent(context);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("whizz.generateCodeDocumentation", async () => {
-      generateCodeDocumentation(context);
+    vscode.commands.registerCommand("whizz.loginWithEmail", async () => {
+      await loginWithEmail(context);
+      sidebarProvider.updateWebviewContent(context);
     })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("whizz.logout", async () => {
+      logout(context);
+      sidebarProvider.updateWebviewContent(context);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "whizz.generateCodeDocumentation",
+      async () => {
+        generateCodeDocumentation(context);
+      }
+    )
   );
 
   context.subscriptions.push(disposable);
@@ -90,40 +103,35 @@ export function activate(context: vscode.ExtensionContext) {
   setupFileDeletionWatcher(context);
   setupFileAdditionWatcher(context);
 
-  const workspaceChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(event => {
+  const workspaceChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(
+    (event) => {
       handleWorkspaceChange(context);
-  });
+    }
+  );
   context.subscriptions.push(workspaceChangeListener);
 
-  if(vscode.workspace.workspaceFolders){
+  if (vscode.workspace.workspaceFolders) {
     addAllFiles(context);
   }
-  
+
   setInterval(async () => {
     summarize(context);
   }, 60000); // 60000 milliseconds = 1 minute
 
-  //REMOVE THIS AFTER TESTING
-  //check in database instead
   setInterval(async () => {
     await writeSummaryFile(context);
   }, 300000); // 300000 milliseconds = 5 minutes
 
-  //Listen for file changes
   vscode.workspace.onDidChangeTextDocument((event) => {
     trackFileChange(event.document);
   });
-
 }
 
-
-// This method is called when your extension is deactivated
 export function deactivate() {}
 
-// to use extesion context
 export function getExtensionContext(): vscode.ExtensionContext {
   if (!extensionContext) {
-      throw new Error('Extension context is not initialized.');
+    throw new Error("Extension context is not initialized.");
   }
   return extensionContext;
 }
