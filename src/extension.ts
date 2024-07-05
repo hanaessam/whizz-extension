@@ -16,6 +16,7 @@ import { createFileWithCode } from "./vscode-gateway/create-file";
 import {
   signupWithEmail,
   loginWithEmail,
+  isAuth
   logout,
 } from "./authentication/emailauthentication";
 import * as path from "path";
@@ -115,7 +116,9 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   setInterval(async () => {
-    summarize(context);
+    if(isAuth(context)){
+      summarize(context);
+    }
   }, 60000); // 60000 milliseconds = 1 minute
 
   setInterval(async () => {

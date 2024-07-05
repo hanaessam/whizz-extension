@@ -66,7 +66,7 @@ export class KeyManagementProvider implements vscode.WebviewPanelSerializer {
             break;
           case "displaySavedKey":
             try {
-              const savedKey = KeyManager.getKey(getUserId());
+              const savedKey = await KeyManager.getKey(getUserId());
               if (savedKey) {
                 KeyManagementProvider.postMessage(panel.webview, {
                   command: "showMessage",
