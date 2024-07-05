@@ -102,3 +102,8 @@ export function logout(context: vscode.ExtensionContext) {
 
   vscode.window.showInformationMessage("Logged out successfully.");
 }
+
+export function isAuth(context: vscode.ExtensionContext): boolean {
+  const userId = context.globalState.get<string>(USER_ID);
+  return !!userId;
+}

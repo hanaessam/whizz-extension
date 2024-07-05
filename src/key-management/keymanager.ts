@@ -8,7 +8,7 @@ export class KeyManager {
     }
     console.log(`99 ${baseUri}/key/${user_id}`);
     const key = await axios.get(`${baseUri}/key/${user_id}`);
-    return key.data.key;
+    return key.data.openAiKey;
   }
   static async addKey(user_id: string | undefined, key: string) {
     if (!user_id) {
