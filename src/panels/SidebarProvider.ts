@@ -105,10 +105,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           if (selectedCode) {
             let response = await sendCodeToGenerateUnitTest(selectedCode);
             webviewView.webview.postMessage({
-              type: 'generate-unit-test',
-              value: response,
+              type: "generate-unit-test",
+              value: response.code,
             });
-            vscode.window.showInformationMessage(response);
+            vscode.window.showInformationMessage(response.code);
           } else {
             vscode.window.showErrorMessage('No code is selected');
           }
