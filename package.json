@@ -54,7 +54,7 @@
         "command": "whizz.getProjectFileArch",
         "title": "Create Project Skeleton",
         "category": "Whizz"
-      }, 
+      },
       {
         "command": "whizz.createFileWithCode",
         "title": "Create File with Code",
@@ -69,18 +69,16 @@
         "command": "whizz.generateCodeDocumentation",
         "title": "Generate Code Documentation",
         "category": "Whizz"
-      }, 
+      },
       {
         "command": "whizz.signupWithEmail",
-        "title": "Sign Up" , 
+        "title": "Sign Up",
         "category": "Whizz"
-
-      }, 
+      },
       {
         "command": "whizz.loginWithEmail",
-        "title": "Login", 
+        "title": "Login",
         "category": "Whizz"
-
       }
     ]
   },
@@ -98,26 +96,34 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/mocha": "^10.0.3",
-    "@types/node": "18.x",
+    "@types/node": "^18.19.39",
     "@types/polka": "^0.5.7",
     "@types/vscode": "^1.89.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
+    "docx": "^8.5.0",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
+    "jsdom": "^24.1.0",
+    "marked": "^13.0.2",
     "mocha": "^10.2.0",
     "ts-loader": "^9.5.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.5.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/marked": "^6.0.0",
+    "@types/pdfkit": "^0.13.4",
     "axios": "^1.6.7",
     "cors": "^2.8.5",
     "dotenv-safe": "^9.1.0",
     "passport": "^0.7.0",
     "passport-github": "^1.1.0",
-    "polka": "^0.5.2"
+    "pdfkit": "^0.15.0",
+    "polka": "^0.5.2",
+    "puppeteer": "^22.12.1"
   }
 }

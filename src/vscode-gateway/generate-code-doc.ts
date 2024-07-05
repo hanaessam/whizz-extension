@@ -4,16 +4,16 @@ import { baseUri } from '../constants';
 import { getAllFileSummaries } from '../summary/caching';
 import { summarize } from '../summary/summarize';
 import { getUserId } from './user';
+import CodeDocumentationManager, { DocumentationDetails } from '../code-documentation/CodeDocumentationManager';
 
 export async function generateCodeDocumentation(context: vscode.ExtensionContext) {
     try {
         await summarize(context);
-        const projectSummary =  getAllFileSummaries(context);
-        // Use file picker for project path
+        const projectSummary = getAllFileSummaries(context);
         const folderUris = await vscode.window.showOpenDialog({
-            canSelectFiles: true, 
-            canSelectFolders: true, 
-            canSelectMany: false, // Can only select one folder
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
             openLabel: 'Select Project Folder'
         });
 
@@ -22,7 +22,6 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
             return;
         }
 
-        // Assuming the user selects a folder, extract the path
         const projectPath = folderUris[0].fsPath;
         const fieldsInput = await vscode.window.showInputBox({
             placeHolder: 'Enter the fields separated by commas (e.g., Overview,Installation,Usage)'
@@ -33,7 +32,7 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
             return;
         }
 
-        const format = await vscode.window.showQuickPick(['pdf', 'docx', 'md'], {
+        const format: any = await vscode.window.showQuickPick(['pdf', 'docx', 'md'], {
             placeHolder: 'Select the documentation format',
         });
 
@@ -43,25 +42,18 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
         }
 
         const fields = fieldsInput.split(',').map(field => field.trim());
+        const documentationDetails: DocumentationDetails = {
+            fields: fields,
+            format: format,
+            projectPath: projectPath,
+            projectSummary: JSON.stringify(projectSummary)
+        };
 
-        try {
-            const response = await axios.post(`${baseUri}/vscode/generate-documentation`, {
-                projectPath: projectPath,
-                fields: fields,
-                format: format,
-                projectSummary: projectSummary,
-                userId : getUserId()
-            });
-
-            const message = response.data.message;
-            vscode.window.showInformationMessage(message);
-        } catch (error: any) {
-            console.error('Failed to generate documentation:', error);
-            vscode.window.showErrorMessage('Failed to generate documentation: ' + error.message);
-        }
+        const codeDocumentationManager = new CodeDocumentationManager();
+        const { message } = await codeDocumentationManager.generateDocumentation(documentationDetails);
+        vscode.window.showInformationMessage(message);
     } catch (error: any) {
-        console.error('Error in generating documentation:', error);
-        vscode.window.showErrorMessage('Error in generating documentation: ' + error.message);
+        console.error('Failed to generate documentation:', error);
+        vscode.window.showErrorMessage('Failed to generate documentation: ' + error.message);
     }
 }
-
