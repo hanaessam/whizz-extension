@@ -94,7 +94,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           if (!data.value) {
             return;
           }
-          vscode.window.showErrorMessage(data.value);
+          if (data.message.includes("401") || data.message.includes("OpenAI key")){
+            vscode.window.showInformationMessage("Invalid or Expired OpenAi key.");
+          }
+          else{ 
+            vscode.window.showErrorMessage(data.value);
+          }
           break;
         }
 
@@ -119,6 +124,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             vscode.window.showErrorMessage("No code is selected");
           }
           break;
+        }
+
+        case 'account-management': {
+          vscode.commands.executeCommand('whizz.authenticationManagement');
+          break;
+        }
+
+        
         
         }
 
@@ -158,21 +171,103 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     );
 
     const nonce = getNonce();
-
-    return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<!--
-					Use a content security policy to only allow loading images from https or from our extension directory,
-					and only allow scripts that have a specific nonce.
-        -->
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${styleResetUri}" rel="stylesheet">
-				<link href="${styleVSCodeUri}" rel="stylesheet">
+    let context = getExtensionContext();
+  
+    const isAuthenticated = isAuth(context); // Check if user is authenticated
+    if (!isAuthenticated)
+      vscode.commands.executeCommand('whizz.authenticationManagement');
+  
+    const loginHtml = `
+      <h1>Welcome to Whizz!</h1>
+      <p>Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
+        With Whizz, expect quick fixes, code explanation, and enhanced productivity right within your IDE.
+      </p>
+      <h1>Login to Continue</h1>
+    `;
+  
+    const mainHtml = `
+      <div class="whizz-body">
+        <div class="github-auth"></div>
+        <div id="buttons"> 
+          <i id="account-button" class="fa-solid fa-user-circle account-icon"></i>
+          <i id="key-button" class="fa-solid fa-key key-icon"></i>
+        </div>
+        <h1>Welcome to Whizz!</h1>
+        <p>Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
+          With Whizz, expect quick fixes, code explanation, and enhanced productivity right within your IDE.
+        </p>
+        <h2 class="head-h2">Features</h2>
+        <div class="features">
+          <a href="" class="fix-code"><i class="fa-solid fa-wrench"></i> Fix</a>
+          <a href="" class="explain-code"><i class="fa-regular fa-lightbulb"></i> Explain</a>
+          <a href="" class="generate-code-documentation"><i class="fa-solid fa-file-lines"></i> Generate Code Documentation</a>
+          <a href="" class="unit-test"><i class="fa-solid fa-vial-circle-check"></i> Generate Unit Test</a>
+          <a href="" class="create-file-arch"><i class="fa-solid fa-folder-tree"></i> Create Project File Architecture</a>
+          <a href="" class="switch-code-lang"><i class="fa-regular fa-file-code"></i> Switch Code Language</a>
+        </div>
+        <h2 class="head-h2">Chat</h2>
+        <div class="chat-box"></div>
+        <div class="chat-field">
+          <input type="text" placeholder="Ask me anything!" class="chat-input"/>
+          <div class="send-icon"><a class="send-btn fa-solid fa-paper-plane"></a></div>
+        </div>
+      </div>
+      <script nonce="${nonce}" src="${scriptUri}"></script>
+    `;
+  
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="${styleResetUri}" rel="stylesheet">
+        <link href="${styleVSCodeUri}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-			</head>
+        <style>
+          #buttons{
+            display: flex;
+            flex-direction: row;
+            gap: 10px; 
+          }
+          .key-icon, .account-icon {
+            
+            cursor: pointer;
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 5px;
+          }
+          
+          .whizz-body {
+            position: relative;
+            padding: 5px;
+          }
+          #login-form {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: auto;
+            space-between: 25px;
+          }
+          #login-form input {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+          }
+          #login-form button {
+            padding: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+          }
+          #login-form button:hover {
+            background-color: #005f7f;
+          }
+        </style>
+      </head>
       <body>
 
         <div class="whizz-body">
@@ -215,4 +310,5 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 			</body>
 			</html>`;
   }
+  
 }

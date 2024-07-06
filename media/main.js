@@ -198,6 +198,9 @@
   const loginWithGithubButton = document.getElementById("github-login-button");
   const githubUserInfo = document.getElementById("github-user-info");
 
+  const keyButton = document.getElementById("key-button");
+  const accountButton = document.getElementById("account-button");
+
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
   unitTest.addEventListener("click", unitTestClicked);
@@ -206,9 +209,28 @@
   codeDoc.addEventListener("click", generateCodeDocumentClicked);
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9741e0ac92eca5b5f20ee94d16ab7cb4b893e35d
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
+  });
+
+<<<<<<< HEAD
+=======
+
+  keyButton.addEventListener("click", () => {
+    vscode.postMessage({
+      type: "open-key-management",
+    });
+  });
+
+  accountButton.addEventListener("click", () => {
+    vscode.postMessage({
+      type: "account-management",
+    });
   });
 
   loginWithGithubButton.addEventListener("click", loginWithGithub);

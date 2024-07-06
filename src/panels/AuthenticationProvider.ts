@@ -48,7 +48,7 @@ export class AuthenticationProvider implements vscode.WebviewPanelSerializer {
               command: "clearFields",
             });
             const sidebarProvider = new SidebarProvider(context.extensionUri);
-            //sidebarProvider.updateWebviewContent(context);
+            // sidebarProvider.updateWebviewContent(context);
             
             vscode.commands.executeCommand('whizz.refresh');
             break;
@@ -71,7 +71,6 @@ export class AuthenticationProvider implements vscode.WebviewPanelSerializer {
             });
 
             // Show the login form after signup
-            vscode.commands.executeCommand('workbench.view.extension.whizz-authentication-view');
             break;
         }
       },

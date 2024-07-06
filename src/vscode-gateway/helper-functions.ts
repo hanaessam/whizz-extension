@@ -151,6 +151,7 @@ function isMediaFile(filePath: string): boolean {
     ".txt",
     ".rar",
     ".zip",
+    ".exe",
   ];
   const ext = path.extname(filePath).toLowerCase();
   return mediaExtensions.includes(ext);

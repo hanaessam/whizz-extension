@@ -74,17 +74,12 @@ export async function login(
       await setUserId(context, user_id);
       vscode.window.showInformationMessage("Logged in successfully.");
       vscode.window.showInformationMessage("Refreshing view");
-      if(isAuth(context)){
-        vscode.window.showInformationMessage("User is authenticated.");
-      }
-      else{
-        vscode.window.showInformationMessage("User is not authenticated.");
-      }
+      
       // Refresh sidebar
       const sidebarProvider = new SidebarProvider(context.extensionUri);
-      //await sidebarProvider.updateWebviewContent(context);
+      // await sidebarProvider.updateWebviewContent(context);
 
-      vscode.window.showInformationMessage("Exiting Login Function.")
+      // vscode.window.showInformationMessage("Exiting Login Function.")
     } catch (error) {
       vscode.window.showErrorMessage(`Failed to login: ${error}`);
     }
@@ -144,7 +139,7 @@ export function logout(context: vscode.ExtensionContext) {
 
   // Refresh sidebar
   const sidebarProvider = new SidebarProvider(context.extensionUri);
-  //sidebarProvider.updateWebviewContent(context);
+  // sidebarProvider.updateWebviewContent(context);
 }
 
 export function isAuth(context: vscode.ExtensionContext): boolean {

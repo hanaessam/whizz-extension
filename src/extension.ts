@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("whizz.showKeyManagement", () => {
+    vscode.commands.registerCommand('whizz.showKeyManagement', () => {
       KeyManagementProvider.createOrShow(context);
     })
   );
