@@ -48,7 +48,7 @@ export class AuthenticationProvider implements vscode.WebviewPanelSerializer {
               command: "clearFields",
             });
             const sidebarProvider = new SidebarProvider(context.extensionUri);
-            sidebarProvider.updateWebviewContent(context);
+            // sidebarProvider.updateWebviewContent(context);
             
             vscode.commands.executeCommand('whizz.refresh');
             break;
