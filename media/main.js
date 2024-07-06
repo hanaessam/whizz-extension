@@ -209,17 +209,11 @@
   codeDoc.addEventListener("click", generateCodeDocumentClicked);
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 9741e0ac92eca5b5f20ee94d16ab7cb4b893e35d
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
   });
 
-<<<<<<< HEAD
-=======
 
   keyButton.addEventListener("click", () => {
     vscode.postMessage({

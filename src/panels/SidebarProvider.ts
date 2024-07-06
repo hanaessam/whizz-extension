@@ -15,6 +15,7 @@ import { createFileWithCode } from "../vscode-gateway/create-file";
 import { getExtensionContext } from "../extension";
 import { getProjectFileArch } from "../vscode-gateway/file-architecture";
 import { generateCodeDocumentation } from "../vscode-gateway/generate-code-doc";
+import { isAuth } from "../authentication/emailauthentication";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -132,8 +133,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         }
 
         
-        
-        }
 
         case "switch-code-lang": {
           await createFileWithCode(getExtensionContext());
