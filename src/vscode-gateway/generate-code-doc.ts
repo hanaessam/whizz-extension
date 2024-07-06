@@ -1,35 +1,32 @@
-import * as vscode from "vscode";
-import axios from "axios";
-import { baseUri } from "../constants";
-import { getAllFileSummaries } from "../summary/caching";
-import { summarize } from "../summary/summarize";
-import { getUserId } from "./user";
+import * as vscode from 'vscode';
+import axios from 'axios';
+import { baseUri } from '../constants';
+import { getAllFileSummaries } from '../summary/caching';
+import { summarize } from '../summary/summarize';
+import { getUserId } from './user';
+import CodeDocumentationManager, { DocumentationDetails } from '../code-documentation/CodeDocumentationManager';
 
-export async function generateCodeDocumentation(
-  context: vscode.ExtensionContext
-) {
-  try {
-    await summarize(context);
-    const projectSummary = getAllFileSummaries(context);
-    // Use file picker for project path
-    const folderUris = await vscode.window.showOpenDialog({
-      canSelectFiles: true,
-      canSelectFolders: true,
-      canSelectMany: false, // Can only select one folder
-      openLabel: "Select Project Folder",
-    });
+export async function generateCodeDocumentation(context: vscode.ExtensionContext) {
+    try {
+        await summarize(context);
+        const projectSummary = getAllFileSummaries(context);
+        const folderUris = await vscode.window.showOpenDialog({
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
+            openLabel: 'Select Project Folder'
+        });
 
     if (!folderUris || folderUris.length === 0) {
       vscode.window.showErrorMessage("No folder selected.");
       return;
     }
 
-    // Assuming the user selects a folder, extract the path
-    const projectPath = folderUris[0].fsPath;
-    const fieldsInput = await vscode.window.showInputBox({
-      placeHolder:
-        "Enter the fields separated by commas (e.g., Overview,Installation,Usage)",
-    });
+        const projectPath = folderUris[0].fsPath;
+        const fieldsInput = await vscode.window.showInputBox({
+            placeHolder: 'Enter the fields separated by commas (e.g., Overview,Installation,Usage)',
+            prompt: 'Enter the fields separated by commas (e.g., Overview,Installation,Usage)'
+        });
 
     if (!fieldsInput) {
       vscode.window.showErrorMessage("No fields entered.");
@@ -46,34 +43,19 @@ export async function generateCodeDocumentation(
       return;
     }
 
-    const fields = fieldsInput.split(",").map((field) => field.trim());
-
-    try {
-      const response = await axios.post(
-        `${baseUri}/vscode/generate-documentation`,
-        {
-          documentationDetails: {
-            projectPath: projectPath,
+        const fields = fieldsInput.split(',').map(field => field.trim());
+        const documentationDetails: DocumentationDetails = {
             fields: fields,
             format: format,
-            projectSummary: projectSummary,
-          },
-          userId: getUserId(),
-        }
-      );
+            projectPath: projectPath,
+            projectSummary: JSON.stringify(projectSummary)
+        };
 
-      const message = response.data.message;
-      vscode.window.showInformationMessage(message);
+        const codeDocumentationManager = new CodeDocumentationManager();
+        const { message } = await codeDocumentationManager.generateDocumentation(documentationDetails);
+        vscode.window.showInformationMessage(message);
     } catch (error: any) {
-      console.error("Failed to generate documentation:", error);
-      vscode.window.showErrorMessage(
-        "Failed to generate documentation: " + error.message
-      );
+        console.error('Failed to generate documentation:', error);
+        vscode.window.showErrorMessage('Failed to generate documentation: ' + error.message);
     }
-  } catch (error: any) {
-    console.error("Error in generating documentation:", error);
-    vscode.window.showErrorMessage(
-      "Error in generating documentation: " + error.message
-    );
-  }
 }

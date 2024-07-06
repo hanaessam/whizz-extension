@@ -321,8 +321,10 @@ import {
 } from "../vscode-gateway/helper-functions";
 import { fixSelectedCode } from "../vscode-gateway/fix-code";
 import { getProjectFileArch } from "../vscode-gateway/file-architecture";
-import { get } from "axios";
+
 import { getExtensionContext } from "../extension";
+import { generateCodeDocumentation } from "../vscode-gateway/generate-code-doc";
+import { createFileWithCode } from "../vscode-gateway/create-file";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -433,6 +435,23 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         case "file-arch":{
           await getProjectFileArch(getExtensionContext());
+          break;
+        }
+
+        case "code-doc":{
+          await generateCodeDocumentation(getExtensionContext());
+          break;
+        }
+
+        case "switch-code-lang": {
+          vscode.window.showInformationMessage("Switching code language");
+          let context = getExtensionContext();
+          createFileWithCode(context).then(() => {
+            vscode.window.showInformationMessage("File created successfully.");
+          }).catch((error) => {
+            vscode.window.showErrorMessage("Failed to create file: " + error.message);
+          }
+          );
           break;
         }
       }
