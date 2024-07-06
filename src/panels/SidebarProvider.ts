@@ -184,14 +184,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     
     const loginHtml = `
     <div class="whizz-body">
-      <div id="buttons"> 
-          <i id="account-button2" class="fa-solid fa-user-circle account-icon"></i>
-      </div>
       <h1>Welcome to Whizz!</h1>
       <p>Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
         With Whizz, expect quick fixes, code explanation, and enhanced productivity right within your IDE.
       </p>
+      
       <h1>Login to Continue</h1>
+      <br>
+      <h4>Click Shift+p to go to login page</h4>
     </div>
     `;
 

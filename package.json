@@ -90,6 +90,13 @@
         "category": "Whizz"
 
       }
+    ],
+    "keybindings": [
+      {
+        "command": "whizz.authenticationManagement",
+        "key": "shift+p",
+        "when": "editorTextFocus"
+      }
     ]
   },
   "scripts": {
