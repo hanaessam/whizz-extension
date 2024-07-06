@@ -29,7 +29,7 @@ export async function createFileWithCode(context: vscode.ExtensionContext) {
       fromLanguage: String(fromLanguage),
       toLanguage: String(toLanguage),
       codeSnippet: String(code),
-      userId : getUserId()
+      userId: getUserId(),
     });
 
     if (response.status !== 200 || !response.data) {
@@ -37,7 +37,7 @@ export async function createFileWithCode(context: vscode.ExtensionContext) {
       throw new Error("Invalid response from server");
     }
 
-    const convertedCode = response.data.code;
+    const convertedCode = response.data;
 
     const languageExtensions: { [key: string]: string } = {
       javascript: "js",
