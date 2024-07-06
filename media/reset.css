@@ -123,3 +123,46 @@ img {
 #github-login-button{
 	display: hidden;
 }
+#buttons{
+	display: flex;
+	flex-direction: row;
+	gap: 10px; 
+  }
+  .key-icon, .account-icon {
+	
+	cursor: pointer;
+	border: 1px solid #ccc;
+	padding: 5px;
+	border-radius: 5px;
+  }
+  
+  .whizz-body {
+	position: relative;
+	padding: 5px;
+  }
+  #login-form {
+	display: flex;
+	flex-direction: column;
+	max-width: 300px;
+	margin: auto;
+  }
+  #login-form input {
+	margin-bottom: 10px;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+  }
+  #login-form button {
+	padding: 10px;
+	background-color: #007acc;
+	color: white;
+	border: none;
+	cursor: pointer;
+	border-radius: 4px;
+  }
+  #login-form button:hover {
+	background-color: #005f7f;
+  }
+  #github-auth{
+	display:none;
+  }
