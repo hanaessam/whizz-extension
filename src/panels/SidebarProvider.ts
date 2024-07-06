@@ -444,14 +444,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         }
 
         case "switch-code-lang": {
-          vscode.window.showInformationMessage("Switching code language");
-          let context = getExtensionContext();
-          createFileWithCode(context).then(() => {
-            vscode.window.showInformationMessage("File created successfully.");
-          }).catch((error) => {
-            vscode.window.showErrorMessage("Failed to create file: " + error.message);
-          }
-          );
+        
+          await createFileWithCode(getExtensionContext());
           break;
         }
       }

@@ -24,8 +24,6 @@ export async function createFileWithCode(context: vscode.ExtensionContext) {
 
   const url = `${baseUri}/vscode/switch-code-language`;
 
-  vscode.window.showInformationMessage(fromLanguage, toLanguage, code);
-
   try {
     const response = await axios.post(url, {
       fromLanguage: String(fromLanguage),
@@ -39,7 +37,7 @@ export async function createFileWithCode(context: vscode.ExtensionContext) {
       throw new Error("Invalid response from server");
     }
 
-    const convertedCode = response.data;
+    const convertedCode = response.data.code;
 
     const languageExtensions: { [key: string]: string } = {
       javascript: "js",
