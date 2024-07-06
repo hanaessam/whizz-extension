@@ -24,7 +24,8 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
 
         const projectPath = folderUris[0].fsPath;
         const fieldsInput = await vscode.window.showInputBox({
-            placeHolder: 'Enter the fields separated by commas (e.g., Overview,Installation,Usage)'
+            placeHolder: 'Enter the fields separated by commas (e.g., Overview,Installation,Usage)',
+            prompt: 'Enter the fields separated by commas (e.g., Overview,Installation,Usage)'
         });
 
         if (!fieldsInput) {
@@ -32,7 +33,7 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
             return;
         }
 
-        const format: any = await vscode.window.showQuickPick(['pdf', 'docx', 'md'], {
+        const format = await vscode.window.showQuickPick(['pdf', 'docx', 'md'], {
             placeHolder: 'Select the documentation format',
         });
 
