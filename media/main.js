@@ -20,6 +20,10 @@
 
   const keyButton = document.getElementById("key-button");
   const signupButton = document.getElementById("signup-button");
+  const accountButton = document.getElementById("account-button");
+
+  console.log('keyButton:', keyButton);  // Check if the key button element is found
+  console.log('accountButton:', accountButton);  // Check if the account button element is found
 
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
@@ -35,6 +39,12 @@
     });
   });
   
+  accountButton.addEventListener("click", () => {
+    vscode.window.showInformationMessage("Account button clicked");
+    vscode.postMessage({
+      type: "account-management",
+    });
+  });
   sendButton.addEventListener("click", () => {
     sendChatInput();
     updateChatbox();
@@ -42,6 +52,7 @@
 
 
   keyButton.addEventListener("click", () => {
+    vscode.window.showInformationMessage("Key button clicked");
     vscode.postMessage({
       type: "open-key-management",
     });

@@ -71,7 +71,6 @@ export class AuthenticationProvider implements vscode.WebviewPanelSerializer {
             });
 
             // Show the login form after signup
-            vscode.commands.executeCommand('workbench.view.extension.whizz-authentication-view');
             break;
         }
       },

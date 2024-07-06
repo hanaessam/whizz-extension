@@ -152,7 +152,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           if (!data.value) {
             return;
           }
-          vscode.window.showErrorMessage(data.value);
+          if (data.message.includes("401") || data.message.includes("OpenAI key")){
+            vscode.window.showInformationMessage("Invalid or Expired OpenAi key.");
+          }
+          else{ 
+            vscode.window.showErrorMessage(data.value);
+          }
           break;
         }
 
@@ -170,10 +175,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         }
 
-        // case 'account-management': {
-        //   vscode.commands.executeCommand('whizz.showKeyManagement');
-        //   break;
-        // }
+        case 'account-management': {
+          vscode.commands.executeCommand('whizz.authenticationManagement');
+          break;
+        }
 
         
       }
@@ -198,24 +203,24 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'));
     const nonce = getNonce();
     let context = getExtensionContext();
-
+  
     const isAuthenticated = isAuth(context); // Check if user is authenticated
-    if(!isAuthenticated)
+    if (!isAuthenticated)
       vscode.commands.executeCommand('whizz.authenticationManagement');
-
+  
     const loginHtml = `
       <h1>Welcome to Whizz!</h1>
-        <p>Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
-          With Whizz, expect quick fixes, code explanation, and enhanced productivity right within your IDE.
-        </p>
+      <p>Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
+        With Whizz, expect quick fixes, code explanation, and enhanced productivity right within your IDE.
+      </p>
       <h1>Login to Continue</h1>
-      
     `;
-
+  
     const mainHtml = `
       <div class="whizz-body">
         <div class="github-auth"></div>
         <h1>Welcome to Whizz!</h1>
+        <i id="account-button" class="fa-solid fa-user-circle account-icon"></i>
         <i id="key-button" class="fa-solid fa-key key-icon"></i>
         <p>Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
           With Whizz, expect quick fixes, code explanation, and enhanced productivity right within your IDE.
@@ -238,7 +243,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       </div>
       <script nonce="${nonce}" src="${scriptUri}"></script>
     `;
-
+  
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -249,7 +254,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         <link href="${styleVSCodeUri}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <style>
-          .key-icon {
+          .key-icon, .account-icon {
             position: absolute;
             top: 10px;
             right: 5px;
@@ -257,6 +262,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             border: 1px solid #ccc;
             padding: 5px;
             border-radius: 5px;
+          }
+          .key-icon {
+            right: 40px; /* Adjust to not overlap with account button */
           }
           .whizz-body {
             position: relative;
@@ -294,4 +302,5 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       </html>
     `;
   }
+  
 }
