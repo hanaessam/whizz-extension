@@ -38,6 +38,7 @@ export async function generateCodeDocumentation(
 
     const format = await vscode.window.showQuickPick(["pdf", "docx", "md"], {
       placeHolder: "Select the documentation format",
+      
     });
 
     if (!format) {

@@ -80,27 +80,27 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.signupWithEmail", async () => {
       await signupWithEmail(context);
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.loginWithEmail", async () => {
       await loginWithEmail(context);
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.refresh", async () => {
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.logout", async () => {
       logout(context);
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 

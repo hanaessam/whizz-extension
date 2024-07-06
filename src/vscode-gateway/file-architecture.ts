@@ -9,12 +9,15 @@ import { getUserId } from "./user";
 export async function getProjectFileArch(context: vscode.ExtensionContext) {
   const projectName = await vscode.window.showInputBox({
     placeHolder: "Enter project name",
+    prompt: "Enter project name",
   });
   const projectDescription = await vscode.window.showInputBox({
     placeHolder: "Enter project description",
+    prompt: "Enter project description",
   });
   const projectFramework = await vscode.window.showInputBox({
     placeHolder: "Enter project framework",
+    prompt: "Enter project framework",
   });
 
   if (projectName && projectDescription && projectFramework) {
