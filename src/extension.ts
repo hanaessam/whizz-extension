@@ -24,6 +24,8 @@ import { generateCodeDocumentation } from "./vscode-gateway/generate-code-doc";
 import { handleWorkspaceChange } from "./summary/caching";
 import { KeyManagementProvider } from "./panels/KeyManagementProvider";
 import { AuthenticationProvider } from "./panels/AuthenticationProvider";
+import { KeyManager } from "./key-management/keymanager";
+import { getUserId } from "./vscode-gateway/user";
 // import { AuthenticationProvider } from "./panels/AuthenticationProvider";
 
 // Store the sidebarProvider globally
@@ -80,27 +82,27 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.signupWithEmail", async () => {
       await signupWithEmail(context);
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.loginWithEmail", async () => {
       await loginWithEmail(context);
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.refresh", async () => {
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("whizz.logout", async () => {
       logout(context);
-      sidebarProvider.updateWebviewContent(context);
+      //sidebarProvider.updateWebviewContent(context);
     })
   );
 
@@ -112,8 +114,31 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+  let saveOpenAIKeyCommand = vscode.commands.registerCommand('whizz.saveOpenAIKey', async () => {
+    // Prompt the user for their OpenAI API key
+    const apiKey = await vscode.window.showInputBox({
+      placeHolder: "Enter your OpenAI API key here",
+      prompt: "OpenAI API Key",
+      ignoreFocusOut: true
+    });
 
-  context.subscriptions.push(disposable);
+    if (!apiKey) {
+      vscode.window.showWarningMessage("OpenAI API key was not provided.");
+      return;
+    }
+
+  
+
+    // Use KeyManager to save the API key
+    try {
+      await KeyManager.addKey(getUserId(), apiKey);
+      vscode.window.showInformationMessage("OpenAI API key saved successfully.");
+    } catch (error) {
+      vscode.window.showErrorMessage(`Failed to save OpenAI API key: ${error}`);
+    }
+  });
+
+  context.subscriptions.push(disposable, saveOpenAIKeyCommand);
 
   setupFileDeletionWatcher(context);
   setupFileAdditionWatcher(context);

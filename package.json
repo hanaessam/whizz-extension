@@ -14,6 +14,7 @@
     "onCommand:whizz.signupWithEmail",
     "onCommand:whizz.loginWithEmail",
     "onCommand:whizz.logout",
+    "onCommand:whizz.saveOpenAIKey",
     "onView:whizz-sidebar"
   ],
   "main": "./dist/extension.js",
@@ -91,6 +92,11 @@
         "title": "Logout", 
         "category": "Whizz"
 
+      },
+      {
+        "command": "whizz.saveOpenAIKey",
+        "title": "Save OpenAI Key",
+        "category": "Whizz"
       }
     ]
   },

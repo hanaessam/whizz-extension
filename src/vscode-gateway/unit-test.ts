@@ -13,12 +13,12 @@ export async function generateUnitTest(code: string) {
   const document = editor.document;
   const fromLanguage = document.languageId;
   try {
-    const response = await axios.post(`${baseUri}/vscode/unit_tests`, {
+    const response = await axios.post(`${baseUri}/vscode/unit-tests`, {
       codesnippet: code,
       userId: getUserId(),
     });
     const unitTest = response.data.code;
-    vscode.window.showErrorMessage(unitTest);
+    vscode.window.showInformationMessage(unitTest);
     const languageExtensions: { [key: string]: string } = {
       javascript: "js",
       typescript: "ts",

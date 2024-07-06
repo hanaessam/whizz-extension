@@ -100,13 +100,14 @@ export async function sendCodeToExplain(selectedCode: string) {
 export async function sendCodeToGenerateUnitTest(selectedCode: string) {
   try {
     const response = await axios.post(`${baseUri}/vscode/unit-tests`, {
-      code_snippet: selectedCode,
+      codeSnippet: selectedCode,
       userId: getUserId(),
     });
     vscode.window.showInformationMessage(
       "Code snippet sent to server successfully"
     );
-    return response.data; // This will be the output you can use in your webview
+
+    return response.data.code; // This will be the output you can use in your webview
   } catch (error) {
     console.error("Error generating unit test:", error);
     vscode.window.showErrorMessage("Error generating unit test");

@@ -82,7 +82,7 @@ export async function login(
       }
       // Refresh sidebar
       const sidebarProvider = new SidebarProvider(context.extensionUri);
-      await sidebarProvider.updateWebviewContent(context);
+      //await sidebarProvider.updateWebviewContent(context);
 
       vscode.window.showInformationMessage("Exiting Login Function.")
     } catch (error) {
@@ -144,7 +144,7 @@ export function logout(context: vscode.ExtensionContext) {
 
   // Refresh sidebar
   const sidebarProvider = new SidebarProvider(context.extensionUri);
-  sidebarProvider.updateWebviewContent(context);
+  //sidebarProvider.updateWebviewContent(context);
 }
 
 export function isAuth(context: vscode.ExtensionContext): boolean {
