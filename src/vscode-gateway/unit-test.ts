@@ -13,11 +13,11 @@ export async function generateUnitTest(code: string) {
   const document = editor.document;
 
   try {
-    const response = await axios.post(`${baseUri}/vscode/unit_tests`, {
-      codesnippet: code,
+    const response = await axios.post(`${baseUri}/vscode/unit-tests`, {
+      codeSnippet: code,
       userId: getUserId(),
     });
-    const unitTest = response.data;
+    const unitTest = response.data.code;
     vscode.window.showInformationMessage(unitTest);
 
     return unitTest;

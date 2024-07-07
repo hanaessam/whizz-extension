@@ -2,14 +2,14 @@ import { promises as fs, existsSync } from 'fs';
 import path from 'path';
 import DocumentFieldManager from './DocumentFieldManager';
 import PDFGenerator from './PDFGenerator';
-// import DocxGenerator from './DocxGenerator.js';
 import MarkdownGenerator from './MarkdownGenerator';
 import Document from './Document';
-import DocumentGenerator from './DocumentGenerator';
+import { getUserId } from '../vscode-gateway/user';
+import DocxGenerator from './DocxGenerator';
 
 export interface DocumentationDetails {
   fields: string[];
-  format: string;
+  format: string ;
   projectPath: string;
   projectSummary: string;
 }
@@ -23,7 +23,7 @@ class CodeDocumentationManager {
   async generateDocumentation(documentationDetails: DocumentationDetails): Promise<{ message: string }> {
     this.document = new Document();
     this.fieldManager = new DocumentFieldManager();
-
+    const userId = getUserId();
     const { fields, format, projectPath, projectSummary } = documentationDetails;
     if (!fields || !format || !projectPath || !projectSummary) {
       throw new Error("Fields, format, projectPath, and projectSummary are required");
@@ -58,18 +58,18 @@ class CodeDocumentationManager {
         this.document.setContent(fields, content);
         await pdfGenerator.generate(this.document, filePath);
         return { message: 'PDF documentation generated successfully.' };
-        // } else if (format === 'docx') {
-        //   const docxGenerator = new DocxGenerator();
-        //   const content = await docxGenerator.generateContent(
-        //     projectPath,
-        //     fields,
-        //     format,
-        //     projectSummary
-        //   );
-        //   this.document.setContent(fields, content);
-        //   await docxGenerator.generate(this.document, filePath);
-        //   return { message: 'Docx documentation generated successfully.' };
-        // } 
+        } else if (format === 'docx') {
+          const docxGenerator = new DocxGenerator();
+          const content = await docxGenerator.generateContent(
+            projectPath,
+            fields,
+            format,
+            projectSummary
+          );
+          this.document.setContent(fields, content);
+          await docxGenerator.generate(this.document, filePath);
+          return { message: 'Docx documentation generated successfully.' };
+        
       } else if (format === 'md') {
         const markdownGenerator = new MarkdownGenerator();
         const content = await markdownGenerator.generateContent(

@@ -100,7 +100,7 @@ export async function sendCodeToExplain(selectedCode: string) {
 export async function sendCodeToGenerateUnitTest(selectedCode: string) {
   try {
     const response = await axios.post(`${baseUri}/vscode/unit-tests`, {
-      code_snippet: selectedCode,
+      codeSnippet: selectedCode,
       userId: getUserId(),
     });
     vscode.window.showInformationMessage(

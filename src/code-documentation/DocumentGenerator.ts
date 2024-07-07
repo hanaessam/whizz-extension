@@ -11,11 +11,12 @@ abstract class DocumentGenerator {
       const response = await axios.post(
         `${baseUri}/vscode/generate-documentation`,
         {
+
           documentationDetails: {
             projectPath: projectPath,
             fields: fields,
             format: format,
-            projectSummary: projectSummary,
+            projectSummary: projectSummary
           },
           userId: getUserId(),
         }
@@ -37,12 +38,12 @@ abstract class DocumentGenerator {
         console.error('Error message:', error.message);
       }
       console.error('Error config:', error.config);
-      
+
       // Rethrow the error to propagate it upwards
       throw new Error('Failed to generate documentation');
     }
-  }  
-  
+  }
+
 
   abstract generate(document: any, filePath: any): Promise<void>;
 

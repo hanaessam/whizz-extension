@@ -10,10 +10,11 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:whizz.authenticate", 
+    "onCommand:whizz.authenticate",
     "onCommand:whizz.signupWithEmail",
     "onCommand:whizz.loginWithEmail",
     "onCommand:whizz.logout",
+    "onCommand:whizz.helloWorld",
     "onView:whizz-sidebar"
   ],
   "main": "./dist/extension.js",
@@ -83,12 +84,11 @@
         "command": "whizz.loginWithEmail",
         "title": "Login",
         "category": "Whizz"
-      }, 
+      },
       {
         "command": "whizz.logout",
-        "title": "Logout", 
+        "title": "Logout",
         "category": "Whizz"
-
       }
     ],
     "keybindings": [
@@ -113,6 +113,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
+    "@types/markdown-it": "^14.1.1",
     "@types/mocha": "^10.0.3",
     "@types/node": "^18.19.39",
     "@types/polka": "^0.5.7",
@@ -138,8 +139,10 @@
     "axios": "^1.6.7",
     "cors": "^2.8.5",
     "dotenv-safe": "^9.1.0",
+    "markdown-it": "^14.1.0",
     "passport": "^0.7.0",
     "passport-github": "^1.1.0",
+    "pdf-lib": "^1.3.1",
     "pdfkit": "^0.15.0",
     "polka": "^0.5.2",
     "puppeteer": "^22.12.1"

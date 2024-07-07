@@ -16,6 +16,7 @@ import { getExtensionContext } from "../extension";
 import { generateCodeDocumentation } from "../vscode-gateway/generate-code-doc";
 import { createFileWithCode } from "../vscode-gateway/create-file";
 import { isAuth, login, signup, logout } from '../authentication/emailauthentication';
+import { generateUnitTest } from "../vscode-gateway/unit-test";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
