@@ -22,7 +22,7 @@ abstract class DocumentGenerator {
         }
       );
 
-      return response.data.message;
+      return response.data;
     } catch (error: any) {
       if (error.response) {
         // The request was made and the server responded with a status code

@@ -22,7 +22,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(private readonly _extensionUri: vscode.Uri) { }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
@@ -109,7 +109,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         }
 
-        case "unit-test":{
+        case "unit-test": {
           let selectedCode = getSelectedCode();
           if (selectedCode) {
             let response = await sendCodeToGenerateUnitTest(selectedCode);
@@ -122,21 +122,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             vscode.window.showErrorMessage("No code is selected");
           }
           break;
-        
+
         }
 
-        case "file-arch":{
+        case "file-arch": {
           await getProjectFileArch(getExtensionContext());
           break;
         }
 
-        case "code-doc":{
+        case "code-doc": {
           await generateCodeDocumentation(getExtensionContext());
           break;
         }
 
         case "switch-code-lang": {
-        
+
           await createFileWithCode(getExtensionContext());
           break;
         }
@@ -178,11 +178,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     const nonce = getNonce();
     let context = getExtensionContext();
-  
+
     const isAuthenticated = isAuth(context); // Check if user is authenticated
     if (!isAuthenticated)
       vscode.commands.executeCommand('whizz.authenticationManagement');
-    
+
     const loginHtml = `
     <div class="whizz-body">
       <h1>Welcome to Whizz!</h1>

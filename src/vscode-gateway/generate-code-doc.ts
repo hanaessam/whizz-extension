@@ -17,10 +17,10 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
             openLabel: 'Select Project Folder'
         });
 
-    if (!folderUris || folderUris.length === 0) {
-      vscode.window.showErrorMessage("No folder selected.");
-      return;
-    }
+        if (!folderUris || folderUris.length === 0) {
+            vscode.window.showErrorMessage('No folder selected.');
+            return;
+        }
 
         const projectPath = folderUris[0].fsPath;
         const fieldsInput = await vscode.window.showInputBox({
@@ -28,20 +28,19 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
             prompt: 'Enter the fields separated by commas (e.g., Overview,Installation,Usage)'
         });
 
-    if (!fieldsInput) {
-      vscode.window.showErrorMessage("No fields entered.");
-      return;
-    }
+        if (!fieldsInput) {
+            vscode.window.showErrorMessage('No fields entered.');
+            return;
+        }
 
-    const format = await vscode.window.showQuickPick(["pdf", "docx", "md"], {
-      placeHolder: "Select the documentation format",
-      
-    });
+        const format = await vscode.window.showQuickPick(['pdf', 'docx', 'md'], {
+            placeHolder: 'Select the documentation format',
+        });
 
-    if (!format) {
-      vscode.window.showErrorMessage("No format selected.");
-      return;
-    }
+        if (!format) {
+            vscode.window.showErrorMessage('No format selected.');
+            return;
+        }
 
         const fields = fieldsInput.split(',').map(field => field.trim());
         const documentationDetails: DocumentationDetails = {
