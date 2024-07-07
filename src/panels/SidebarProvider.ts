@@ -188,6 +188,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       <p>Meet Whizz, your code assistant, an AI-powered extension designed to simplify your workflow.
         With Whizz, expect quick fixes, code explanation, and enhanced productivity right within your IDE.
       </p>
+      
       <h1>Login to Continue</h1>
       <br>
       <h4>Press Shift+p to open Login Window</h4>
