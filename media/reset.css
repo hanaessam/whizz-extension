@@ -84,19 +84,19 @@ img {
 }
 
 .chat-message {
-	background-color: rgba(255, 255, 255, 0.05);
-	border-radius: 5px;
-	margin: 5px 0;
-	padding: 5px;
-	border: solid 1px rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px 0 5px 5px; /* Top right corner is not rounded */
+    margin: 5px 0;
+    padding: 5px;
+    border: solid 1px rgba(255, 255, 255, 0.1);
 }
 
-.chat-message-user{
-	background-color: rgba(255, 255, 255, 0.07);
-	border-radius: 5px;
-	margin: 5px 0;
-	padding: 5px;
-	border: solid 1px rgba(255, 255, 255, 0.1);
+.chat-message-user {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-radius: 5px 5px 5px 0; /* Bottom left corner is not rounded for user messages */
+    margin: 5px 0;
+    padding: 5px;
+    border: solid 1px rgba(255, 255, 255, 0.1);
 }
 
 .head-h2{
@@ -127,6 +127,7 @@ img {
 	display: flex;
 	flex-direction: row;
 	gap: 10px; 
+	margin-left: auto;
   }
   .key-icon, .account-icon {
 	
@@ -163,6 +164,8 @@ img {
   #login-form button:hover {
 	background-color: #005f7f;
   }
-  #github-auth{
-	display:none;
+  
+
+  .github-auth{
+	visibility: hidden;
   }

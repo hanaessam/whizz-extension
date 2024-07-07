@@ -201,7 +201,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         <div id="buttons"> 
           <i id="account-button" class="fa-solid fa-user-circle account-icon"></i>
-          <i id="key-button" class="fa-solid fa-key key-icon"></i>
+          <i id="key-button" class="fa-solid fa-key key-icon"></i> 
         </div>
         <div class="github-auth">
          
@@ -212,7 +212,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             With Whizz, expect quick fixes, code explaination, and enhanced productivity right within your IDE. 
           </p>
           <div class="github-auth">
-            <button id="github-login-button">Login with GitHub</button>
+            <button id="github-login-button"></button>
                <p id="github-user-info"></p>
                 </div>
               

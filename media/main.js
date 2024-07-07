@@ -228,7 +228,7 @@
   function appendMessageToChatbox(message) {
     const newMessageElement = document.createElement("p");
     newMessageElement.className = "chat-message";
-    newMessageElement.textContent = `Whizz: ${message}`;
+    newMessageElement.textContent = `Whizz: \n ${message}`;
     chatbox.appendChild(newMessageElement);
   }
 
