@@ -90,7 +90,15 @@
         "category": "Whizz"
 
       }
+    ],
+    "keybindings": [
+      {
+        "command": "whizz.authenticationManagement",
+        "key": "shift+p",
+        "when": "editorTextFocus"
+      }
     ]
+   
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

@@ -197,7 +197,6 @@
 
   const keyButton = document.getElementById("key-button");
   const accountButton = document.getElementById("account-button");
-  const accountButton2 = document.getElementById("account-button2");
 
   fixCode.addEventListener("click", fixClicked);
   explainCode.addEventListener("click", explainClicked);
@@ -223,11 +222,7 @@
       type: "account-management",
     });
   });
-  accountButton2.addEventListener("click", () => {
-    vscode.postMessage({
-      type: "account-management",
-    });
-  });
+  
   loginWithGithubButton.addEventListener("click", loginWithGithub);
 
   function appendMessageToChatbox(message) {
