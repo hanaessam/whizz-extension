@@ -1,6 +1,7 @@
 import Document from './Document';
 import axios from 'axios';
 import { baseUri } from '../constants';
+import { getUserId } from '../vscode-gateway/user';
 
 abstract class DocumentGenerator {
   constructor() { }
@@ -8,13 +9,15 @@ abstract class DocumentGenerator {
   async generateContent(projectPath: any, fields: any, format: any, projectSummary: any) {
     try {
       const content = await axios.post(`${baseUri}/vscode/generate-documentation`, {
-        projectPath,
-        fields,
-        format,
-        projectSummary,
+        documentationDetails: {
+          projectPath: projectPath,
+          fields: fields,
+          format: format,
+          projectSummary: projectSummary
+        }, userId: getUserId()
       });
-  
-      
+
+
       return content.data;
     } catch (error: any) {
       if (error.response) {
@@ -31,12 +34,12 @@ abstract class DocumentGenerator {
         console.error('Error message:', error.message);
       }
       console.error('Error config:', error.config);
-      
+
       // Rethrow the error to propagate it upwards
       throw new Error('Failed to generate documentation');
     }
-  }  
-  
+  }
+
 
   abstract generate(document: any, filePath: any): Promise<void>;
 
