@@ -14,7 +14,7 @@ import { getProjectFileArch } from "../vscode-gateway/file-architecture";
 
 import { getExtensionContext } from "../extension";
 import { generateCodeDocumentation } from "../vscode-gateway/generate-code-doc";
-import { createFileWithCode } from "../vscode-gateway/create-file";
+import { createFileWithCode, createFileWithResponseCode } from "../vscode-gateway/create-file";
 import { isAuth, login, signup, logout } from '../authentication/emailauthentication';
 import { generateUnitTest } from "../vscode-gateway/unit-test";
 
@@ -117,6 +117,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               type: "unit-test",
               value: response.code,
             });
+            await createFileWithResponseCode(getExtensionContext(), response.code, response.language);
             vscode.window.showInformationMessage(response.code);
           } else {
             vscode.window.showErrorMessage("No code is selected");

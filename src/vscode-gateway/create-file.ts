@@ -71,3 +71,44 @@ export async function createFileWithCode(context: vscode.ExtensionContext) {
     vscode.window.showErrorMessage(`Failed to create file: ${error}`);
   }
 }
+
+
+export async function createFileWithResponseCode(context: vscode.ExtensionContext, responseCode: string, targetLanguage: string) {
+  const languageExtensions: { [key: string]: string } = {
+    javascript: "js",
+    typescript: "ts",
+    python: "py",
+    java: "java",
+    csharp: "cs",
+    cpp: "cpp",
+    go: "go",
+    ruby: "rb",
+    // Add other languages and their extensions here
+  };
+
+  const fileExtension = languageExtensions[targetLanguage.toLowerCase()];
+  if (!fileExtension) {
+    vscode.window.showErrorMessage("Unsupported target language");
+    return;
+  }
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showErrorMessage("No active editor");
+    return;
+  }
+
+  const document = editor.document;
+ 
+  const filePath = document.uri.fsPath;
+  const newFilePath = filePath.replace(/(\.[^/.]+)?$/, `_unittest.${fileExtension}`);
+
+  const uri = vscode.Uri.file(newFilePath);
+  const writeData = Buffer.from(responseCode, "utf8");
+
+  await vscode.workspace.fs.writeFile(uri, writeData);
+  const newDocument = await vscode.workspace.openTextDocument(uri);
+  await vscode.window.showTextDocument(newDocument);
+
+
+  vscode.window.showInformationMessage(`File created: ${uri.fsPath}`);
+}
