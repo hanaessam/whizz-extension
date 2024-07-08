@@ -33,7 +33,7 @@ export async function generateCodeDocumentation(context: vscode.ExtensionContext
             return;
         }
 
-        const format = await vscode.window.showQuickPick(['md', 'docx', 'pdf'], {
+        const format = await vscode.window.showQuickPick(['md'], {
             placeHolder: 'Select the documentation format: Markdown, Word, or PDF',
         });
 
